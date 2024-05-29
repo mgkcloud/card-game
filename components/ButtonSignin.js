@@ -27,7 +27,7 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
     return (
       <Link
         href={config.auth.callbackUrl}
-        className={`btn ${extraStyle ? extraStyle : ""}`}
+        className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
       >
         {user?.user_metadata?.avatar_url ? (
           <img
@@ -50,7 +50,7 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
 
   return (
     <Link
-      className={`btn ${extraStyle ? extraStyle : ""}`}
+      className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
       href={config.auth.loginUrl}
     >
       {text}

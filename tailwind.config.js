@@ -11,6 +11,11 @@ module.exports = {
         gradient:
           "linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82)",
       },
+      minHeight: {
+        '4/5': '80vh',
+        '3/4': '75vh',
+        '65': '65vh',
+      },
       animation: {
         opacity: "opacity 0.25s ease-in-out",
         appearFromRight: "appearFromRight 300ms ease-in-out",

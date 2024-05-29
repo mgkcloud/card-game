@@ -9,8 +9,10 @@ import apiClient from "@/libs/api";
 // For instance: A popup to send a freebie, joining a waitlist, etc.
 // It calls the /api/lead/route.js route and store a Lead document in the database
 const ButtonLead = ({ extraStyle }) => {
-  const inputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const processInputRef = useRef(null);
   const [email, setEmail] = useState("");
+  const [process, setProcess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -21,11 +23,13 @@ const ButtonLead = ({ extraStyle }) => {
     try {
       await apiClient.post("/lead", { email });
 
-      toast.success("Thanks for joining the waitlist!");
+      toast.success("Thanks! We're generating your agents...");
 
-      // just remove the focus on the input
-      inputRef.current.blur();
+      // just remove the focus on the inputs
+      emailInputRef.current.blur();
+      processInputRef.current.blur();
       setEmail("");
+      setProcess("");
       setIsDisabled(true);
     } catch (error) {
       console.log(error);
@@ -38,23 +42,36 @@ const ButtonLead = ({ extraStyle }) => {
       className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
       onSubmit={handleSubmit}
     >
+
+      <input
+        required
+        type="text"
+        value={process}
+        ref={processInputRef}
+        placeholder="A task you're looking to automate"
+        className="input input-bordered w-full placeholder:opacity-60"
+        onChange={(e) => setProcess(e.target.value)}
+      />
+
       <input
         required
         type="email"
         value={email}
-        ref={inputRef}
+        ref={emailInputRef}
         autoComplete="email"
-        placeholder="tom@cruise.com"
+        placeholder="your@business-email.com"
         className="input input-bordered w-full placeholder:opacity-60"
         onChange={(e) => setEmail(e.target.value)}
       />
+
+
 
       <button
         className="btn btn-primary btn-block"
         type="submit"
         disabled={isDisabled}
       >
-        Join waitlist
+        Generate now
         {isLoading ? (
           <span className="loading loading-spinner loading-xs"></span>
         ) : (

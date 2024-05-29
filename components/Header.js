@@ -4,9 +4,14 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import ButtonSignin from "./ButtonSignin";
-import logo from "@/app/icon.png";
+import logo from "@/app/feistylogo.svg";
+import ButtonAccount from "@/components/ButtonAccount";
+import ButtonSignin from "@/components/ButtonSignin";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import config from "@/config";
+import AnnouncementBar from "@/components/AnnouncementBar";
+
+
 
 const links = [
   {
@@ -28,6 +33,23 @@ const cta = <ButtonSignin extraStyle="btn-primary" />;
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const Header = () => {
+
+
+  const supabase = createClientComponentClient();
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+
+      setUser(data.user);
+    };
+
+    getUser();
+  }, [supabase]);
+
+
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,13 +59,17 @@ const Header = () => {
   }, [searchParams]);
 
   return (
-    <header className="bg-base-200">
+    <header className="bg-neutral">
+      <AnnouncementBar />
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
-        {/* Your logo/name on large screens */}
         <div className="flex lg:flex-1">
+
+        </div>
+        {/* Your logo/name on large screens */}
+        <div className="flex lg:flex-1 lg:justify-center">
           <Link
             className="flex items-center gap-2 shrink-0 "
             href="/"
@@ -52,14 +78,14 @@ const Header = () => {
             <Image
               src={logo}
               alt={`${config.appName} logo`}
-              className="w-8"
-              placeholder="blur"
+              className="w-48"
               priority={true}
               width={32}
               height={32}
             />
-            <span className="font-extrabold text-lg">{config.appName}</span>
+
           </Link>
+          <span className="text-xs font-semibold self-end text-gray-700">AGENCY</span>
         </div>
         {/* Burger button to open menu on mobile */}
         <div className="flex lg:hidden">
@@ -87,7 +113,7 @@ const Header = () => {
         </div>
 
         {/* Your links on large screens */}
-        <div className="hidden lg:flex lg:justify-center lg:gap-12 lg:items-center">
+        <div className="hidden lg:justify-center lg:gap-12 lg:items-center">
           {links.map((link) => (
             <Link
               href={link.href}
@@ -100,8 +126,19 @@ const Header = () => {
           ))}
         </div>
 
+
+
         {/* CTA on large screens */}
-        <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div>
+        <div className="hidden lg:flex lg:justify-end lg:flex-1">
+
+          {user ? (
+            <ButtonAccount />) : (
+            <ButtonSignin />
+
+          )}
+
+        </div>
+
       </nav>
 
       {/* Mobile menu, show/hide based on menu state. */}
@@ -119,8 +156,7 @@ const Header = () => {
               <Image
                 src={logo}
                 alt={`${config.appName} logo`}
-                className="w-8"
-                placeholder="blur"
+                className="w-72"
                 priority={true}
                 width={32}
                 height={32}
