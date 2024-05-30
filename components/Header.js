@@ -85,7 +85,7 @@ const Header = () => {
             />
 
           </Link>
-          <span className="text-xs font-semibold self-end text-gray-700">AGENCY</span>
+          <span className="text-xs font-semibold self-end text-gray-500">AGENCY</span>
         </div>
         {/* Burger button to open menu on mobile */}
         <div className="flex lg:hidden">

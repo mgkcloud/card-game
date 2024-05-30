@@ -24,20 +24,20 @@ const config = {
             ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
             : "price_456",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: "Starter",
+        name: "Starter Exploration Milestone",
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "Perfect for small projects",
+        description: "Get an actionable plan to kickstart your AI transformation",
         // The price you want to display, the one user will be charged on Stripe.
         price: 499,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
         priceAnchor: 699,
+        feature: "",
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "Expected generated outputs",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
+          { name: "First-reply email templates" },
+          { name: "Technology recommendation" },
         ],
       },
       {
@@ -47,19 +47,39 @@ const config = {
           process.env.NODE_ENV === "development"
             ? "price_1O5KtcAxyNprDp7iftKnrrpw"
             : "price_456",
-        name: "Advanced",
-        description: "You need more power",
-        price: 749,
-        priceAnchor: 949,
+        name: "Advanced Exploration Milestone",
+        description: "Get a more robust plan to help you implement AI lead categorisiation",
+        price: 797,
+        priceAnchor: 999,
+        feature: "",
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "5 Day, in-depth AI Exploration",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
-          { name: "1 year of updates" },
-          { name: "24/7 support" },
+          { name: "Technology scoping and recommendation" },
+          { name: "Quality score (output accuracy measurement)" },
+          { name: "Includes Starter Exploration Milestone" },
+        ],
+      },
+      {
+        // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
+        isFeatured: false,
+        priceId:
+          process.env.NODE_ENV === "development"
+            ? "price_1O5KtcAxyNprDp7iftKnrrpw"
+            : "price_456",
+        name: "End-to-end Sales Automation",
+        description: "Custom lead qualification, routing and first-reply automation for your sales team",
+        feature: "",
+        features: [
+          {
+            name: "1-on-1 support",
+          },
+          { name: "Guaranteed output similarity" },
+          { name: "CRM data collection" },
+          { name: "BYO marketing stack" },
+          { name: "Upgradable" },
+
         ],
       },
     ],

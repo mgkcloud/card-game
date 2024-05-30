@@ -1,12 +1,27 @@
 import config from "@/config";
-import ButtonCheckout from "./ButtonCheckout";
+import { useState, useEffect } from "react";
+import Modal from "@/components/Modal"; // Import the Modal component
+import ButtonLead from "@/components/ButtonLead";
+
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
 const Pricing = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+
+
+
   return (
+
+
     <section className="bg-base-200 overflow-hidden" id="pricing">
       <div className="py-24 px-8 max-w-5xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
@@ -57,12 +72,21 @@ const Pricing = () => {
                       </p>
                     </div>
                   )}
-                  <p className={`text-5xl tracking-tight font-extrabold`}>
-                    ${plan.price}
-                  </p>
+
+                  {plan.price ? (
+                    <p className={`text-5xl tracking-tight font-extrabold`}>
+                      {plan.price}
+                    </p>
+
+                  ) : (
+                    <p className={`text-2xl tracking-tight font-extrabold`}>
+                      Contact us for pricing
+                    </p>
+
+                  )}
                   <div className="flex flex-col justify-end mb-[4px]">
                     <p className="text-xs text-base-content/60 uppercase font-semibold">
-                      AUD
+                      {plan.price ? ("AUD") : ("")}
                     </p>
                   </div>
                 </div>
@@ -88,19 +112,29 @@ const Pricing = () => {
                     ))}
                   </ul>
                 )}
-                <div className="space-y-2">
-                  <ButtonCheckout priceId={plan.priceId} />
-
+                <div className="space-y-2 flex flex-wrap justify-center">
+                  <button
+                    className={`btn btn-primary`}
+                    onClick={openModal}
+                  >
+                    Get Started
+                  </button>
+                <div className="w-full">
                   <p className="flex items-center justify-center gap-2 text-sm text-center text-base-content/80 font-medium relative">
-                    Pay once. Access forever.
+                  {plan.feature}
                   </p>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+      <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+        <ButtonLead />
+      </Modal>
     </section>
+    
   );
 };
 

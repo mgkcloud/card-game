@@ -1,22 +1,23 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import config from "@/config";
+import Modal from "@/components/Modal"; // Import the Modal component
+import ButtonLead from "@/components/ButtonLead";
 
-// A simple button to sign in with our providers (Google & Magic Links).
-// It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
-// If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ text = "Get started", extraStyle }) => {
-  const supabase = createClientComponentClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const supabase = createClientComponentClient();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
-
       setUser(data.user);
     };
 
@@ -49,12 +50,19 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
   }
 
   return (
-    <Link
-      className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
-      href={config.auth.loginUrl}
-    >
-      {text}
-    </Link>
+    <>
+      <button
+        className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
+        onClick={openModal}
+      >
+        {text}
+    </button>
+
+      {/* Modal component */}
+      <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+        <ButtonLead />
+      </Modal>
+    </>
   );
 };
 
