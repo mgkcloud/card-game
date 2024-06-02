@@ -26,7 +26,7 @@ const Hero = () => {
         Automate, encrich, and qualify your inbound leads
         </h1>
         <p className="text-lg opacity-80 leading-relaxed">
-        We build solutions for the future. We'll integrate your existing systems and tools into a decision making system, designed to complete a range of admin and operational tasks.
+        We build solutions for the future. We&apos;ll integrate your existing systems and tools into a decision making system, designed to complete a range of admin and operational tasks.
 
         </p>
         <ButtonLead />
