@@ -43,7 +43,7 @@ const HeroVideo = () => {
                                     Automate, enrich, and qualify your inbound leads
                                 </h1>
                                 <p className="text-lg opacity-80 text-center leading-relaxed">
-                                    We build solutions for the future. We'll integrate your existing systems into a decision making agent, designed to complete a range of sales and operational tasks. Supercharge your dealflow.
+                                    We build solutions for the future. We&apos;ll integrate your existing systems into a decision making agent, designed to complete a range of sales and operational tasks. Supercharge your dealflow.
                                 </p>
                             </div>
                             <div className='flex flex-col items-center justify-center w-full p-2 lg:p-12 pb-0 lg:pb-4'>
