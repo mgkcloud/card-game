@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
-import logo from "@/app/icon.png";
+import logo from "@/app/feistylogo.svg";
 
 // Add the Footer to the bottom of your landing page and more.
 // The support link is connected to the config.js file. If there's no config.mailgun.supportEmail, the link won't be displayed.
@@ -12,27 +12,25 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-8 py-24">
         <div className=" flex lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
           <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
-            <Link
-              href="/#"
-              aria-current="page"
-              className="flex gap-2 justify-center md:justify-start items-center"
-            >
-              <Image
-                src={logo}
-                alt={`${config.appName} logo`}
-                priority={true}
-                className="w-6 h-6"
-                width={24}
-                height={24}
-              />
-              <strong className="font-extrabold tracking-tight text-base md:text-lg">
-                {config.appName}
-              </strong>
-            </Link>
+          <div className="flex lg:flex-1 lg:justify-center">
+          <Link
+            className="flex items-center gap-2 shrink-0 "
+            href="/"
+            title={`${config.appName} hompage`}
+          >
+            <Image
+              src={logo}
+              alt={`${config.appName} logo`}
+              className="w-48"
+              priority={true}
+              width={32}
+              height={32}
+            />
 
-            <p className="mt-3 text-sm text-base-content/80">
-              {config.appDescription}
-            </p>
+          </Link>
+          <span className="text-xs font-semibold self-end text-gray-500">AGENCY</span>
+        </div>
+        
             <p className="mt-3 text-sm text-base-content/60">
               Copyright © {new Date().getFullYear()} - All rights reserved
             </p>
@@ -57,12 +55,7 @@ const Footer = () => {
                 <Link href="/#pricing" className="link link-hover">
                   Pricing
                 </Link>
-                <Link href="/blog" className="link link-hover">
-                  Blog
-                </Link>
-                <a href="/#" target="_blank" className="link link-hover">
-                  Affiliates
-                </a>
+      
               </div>
             </div>
 

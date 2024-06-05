@@ -91,8 +91,7 @@ const Header = () => {
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
-            onClick={() => setIsOpen(true)}
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 hidden"
           >
             <span className="sr-only">Open main menu</span>
             <svg

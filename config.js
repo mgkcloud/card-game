@@ -45,8 +45,8 @@ const config = {
         isFeatured: true,
         priceId:
           process.env.NODE_ENV === "development"
-            ? "price_1O5KtcAxyNprDp7iftKnrrpw"
-            : "price_456",
+            ? "price_1O5KtcAxyNprDp8iftKnrrpw"
+            : "price_457",
         name: "Advanced Exploration Milestone",
         description: "Get a more robust plan to help you implement AI lead categorisiation",
         price: 797,
@@ -66,8 +66,8 @@ const config = {
         isFeatured: false,
         priceId:
           process.env.NODE_ENV === "development"
-            ? "price_1O5KtcAxyNprDp7iftKnrrpw"
-            : "price_456",
+            ? "price_1O5KtcAxyNpr4p7iftKnrrpw"
+            : "price_426",
         name: "End-to-end Sales Automation",
         description: "Custom lead qualification, routing and first-reply automation for your sales team",
         feature: "",

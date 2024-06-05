@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import willlogo from "@/app/logopersona.png";
 
 const features = [
   {
@@ -21,7 +22,7 @@ const features = [
             <div className="chat chat-start ">
               <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
-                  <img alt="Tailwind CSS chat bubble component" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                  <img alt="Tailwind CSS chat bubble component" src="htt ps://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
                 </div>
               </div>
               <div className="chat-bubble">Do you offer SEO services for Dentists?</div>
@@ -84,8 +85,8 @@ const features = [
 
         ].map((feature, i) => (
           <div
-          className={`p-4 bg-base-100 text-base-content rounded-box flex justify-between mb-2 gap-4 ${i === 0 ? "group-hover:-mt-24 group-hover:opacity-0 duration-500" : ""}`}
-          key={i}
+            className={`p-4 bg-base-100 text-base-content rounded-box flex justify-between mb-2 gap-4 ${i === 0 ? "group-hover:-mt-24 group-hover:opacity-0 duration-500" : ""}`}
+            key={i}
           >
             <div>
               <p className="font-semibold mb-1">{feature.title}</p>
@@ -94,8 +95,7 @@ const features = [
               </p>
             </div>
             <button
-            className={`px-4 py-2 rounded-box group text-center text-lg duration-150 border border-transparent ${feature.allowed ? "bg-primary text-primary-content" : "bg-red-500 text-red-100"
-          }`}
+              className={`px-4 py-2 rounded-box group text-center text-lg duration-150 border border-transparent bg-primary text-primary-content`}
             >
               {feature.allowed ? "✅" : "❌"}
             </button>
@@ -113,80 +113,55 @@ const features = [
         <div className="-rotate-[8deg] flex min-w-max overflow-x-visible h-full lg:pt-4">
           {[
             {
-              buttonStyles: "bg-primary text-primary-content",
-              css: "-ml-1 rotate-[6deg] w-72 h-72 z-30 bg-base-200 text-base-content rounded-2xl group-hover:-ml-64 group-hover:opacity-0 group-hover:scale-75 transition-all duration-500 p-4",
+              buttonStyles: "",
+              css: "-ml-1 rotate-[6deg] w-72 h-72 bg-base-200 text-base-content bg-primary rounded-2xl group-hover:-ml-64 group-hover:opacity-0 group-hover:scale-75 transition-all duration-500 p-4",
+              cardTitle: "CRM",
+              softwareTitle: "Hubspot",
+              softwareTitle2: "Pipedrive",
             },
             {
-              buttonStyles: "bg-secondary text-secondary-content",
-              css: "rotate-[6deg] bg-base-200 text-base-content w-72 h-72 -mr-20 -ml-20 z-20 rounded-xl p-4",
+              buttonStyles: "",
+              css: "rotate-[6deg] bg-base-200 text-base-content bg-secondary  w-72 h-72 -mr-20 -ml-20 rounded-xl p-4",
+              cardTitle: "Analytics",
+
+              softwareTitle: "GA4",
+              softwareTitle2: "Twilio Segment",
+
             },
             {
-              buttonStyles: "bg-accent text-accent-content",
-              css: "rotate-[6deg] bg-base-200 text-base-content z-10 w-72 h-72 rounded-xl p-4",
+              buttonStyles: "",
+              css: "rotate-[6deg] bg-base-200 text-base-content bg-accent  w-72 h-72 rounded-xl p-4",
+              cardTitle: "Lead Forms",
+
+              softwareTitle: "Wordpress Forms",
+              softwareTitle2: "Conversion Pages",
             },
             {
-              buttonStyles: "bg-neutral text-neutral-content",
-              css: "rotate-[6deg] bg-base-200 text-base-content w-72 h-72 -ml-20 rounded-xl p-4",
-            },
-            {
-              buttonStyles: "bg-base-100 text-base-content",
-              css: "rotate-[6deg] bg-base-200 text-base-content w-72 h-72 -ml-10 -z-10 rounded-xl p-4 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300",
+              buttonStyles: "",
+              css: "rotate-[6deg] bg-neutral bg-base-200 text-base-content w-72 h-72 -ml-20 rounded-xl p-4",
+              cardTitle: "Booking",
+
+              softwareTitle: "Chilipiper",
+              softwareTitle2: "Calendly",
             },
           ].map((theme, i) => (
             <div className={theme.css} key={i}>
-              <div className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
-                Trending feedback
+              <div className={`font-medium uppercase text-center tracking-wide ${i == 2 ? ("text-base") : ("text-white")} text-sm mb-3`}>
+                {theme.cardTitle}
               </div>
               <div className="space-y-2">
                 <div className="p-4 bg-base-100 rounded-box flex justify-between">
                   <div>
-                    <p className="font-semibold mb-1">Clickable cards</p>
-                    <p className="opacity-80">Make cards more accessible</p>
+                    <p className="font-semibold mb-1">{theme.softwareTitle}</p>
+
                   </div>
-                  <button
-                    className={`px-4 py-2 rounded-box group text-center text-lg duration-150 border border-transparent ${theme.buttonStyles}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={`w-5 h-5 ease-in-out duration-150 -translate-y-0.5 group-hover:translate-y-0`}
-                    >
-                      <path d="m18 15-6-6-6 6" />
-                    </svg>
-                    8
-                  </button>
+
                 </div>
-                <div className="p-4 bg-base-100 rounded-box flex justify-between ">
+                <div className="p-4 bg-base-100 rounded-box flex justify-between ${theme.buttonStyles}">
                   <div>
-                    <p className="font-semibold mb-1">Bigger images</p>
-                    <p className="opacity-80">Make cards more accessible</p>
+                    <p className="font-semibold mb-1">{theme.softwareTitle2}</p>
+
                   </div>
-                  <button
-                    className={`px-4 py-2 rounded-box group text-center text-lg duration-150 border border-transparent ${theme.buttonStyles}`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={`w-5 h-5 ease-in-out duration-150 -translate-y-0.5 group-hover:translate-y-0`}
-                    >
-                      <path d="m18 15-6-6-6 6" />
-                    </svg>
-                    5
-                  </button>
                 </div>
               </div>
             </div>
@@ -204,18 +179,16 @@ const features = [
         {[
           {
             id: 1,
-            text: "Can we have a feature to add a custom domain to IndiePage?",
-            userImg:
-              "https://pbs.twimg.com/profile_images/1514863683574599681/9k7PqDTA_400x400.jpg",
+            text: "Can we automate customer support replies for our SaaS product?",
+            userImg: willlogo,
             userName: "Marc Lou",
             createdAt: "2024-09-01T00:00:00Z",
           },
           {
             id: 2,
-            text: "I'd definitelly pay for that 🤩",
-            userImg:
-              "https://pbs.twimg.com/profile_images/1778434561556320256/knBJT1OR_400x400.jpg",
-            userName: "Dan K.",
+            text: "Certainly, we can create agents for any administrative or sales task.",
+            userImg: willlogo,
+            userName: "William V.",
             createdAt: "2024-09-02T00:00:00Z",
             transition:
               "opacity-0 group-hover:opacity-100 duration-500 translate-x-1/4 group-hover:translate-x-0",
@@ -255,11 +228,11 @@ const FeaturesGrid = () => {
     <section className="flex justify-center items-center w-full bg-base-200/50 text-base-content py-20 lg:py-32">
       <div className="flex flex-col max-w-[82rem] gap-16 md:gap-20 px-4">
         <h2 className="max-w-4xl font-black text-4xl md:text-6xl tracking-[-0.01em]">
-        Enhance your sales<br />with  
-        <span className="underline decoration-dashed underline-offset-8 decoration-base-300">
-        &nbsp;AI-Driven&nbsp;
+          Enhance your sales<br />with
+          <span className="underline decoration-dashed underline-offset-8 decoration-base-300">
+            &nbsp;AI-Driven&nbsp;
           </span>
-        automation {" "}
+          automation {" "}
         </h2>
         <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-[82rem]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-10">

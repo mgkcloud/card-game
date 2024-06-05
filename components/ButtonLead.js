@@ -21,7 +21,7 @@ const ButtonLead = ({ extraStyle }) => {
 
     setIsLoading(true);
     try {
-      await apiClient.post("/lead", { email });
+      await apiClient.post("/lead", { email, process });
 
       toast.success("Thanks! We're generating your agents...");
 
