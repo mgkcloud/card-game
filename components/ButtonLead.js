@@ -41,6 +41,7 @@ const ButtonLead = ({ extraStyle }) => {
     <form
       className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
       onSubmit={handleSubmit}
+      netlify
     >
 
       <input
