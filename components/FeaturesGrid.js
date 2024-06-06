@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
-import willlogo from "@/app/logopersona.png";
 
 const features = [
   {
@@ -21,16 +20,13 @@ const features = [
 
             <div className="chat chat-start ">
               <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                  <img alt="Tailwind CSS chat bubble component" src="htt ps://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-                </div>
+              
               </div>
               <div className="chat-bubble">Do you offer SEO services for Dentists?</div>
             </div>
             <div className="chat chat-end opacity-0 group-hover:opacity-100 duration-1000 pt-2">
               <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
-                  <img alt="Tailwind CSS chat bubble component" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
                 </div>
               </div>
               <div className="chat-bubble">Our base healthcare SEO package provides authoritarian links and content suitible for your audience, would you like to learn more about our package options?
@@ -180,14 +176,12 @@ const features = [
           {
             id: 1,
             text: "Can we automate customer support replies for our SaaS product?",
-            userImg: willlogo,
             userName: "Marc Lou",
             createdAt: "2024-09-01T00:00:00Z",
           },
           {
             id: 2,
             text: "Certainly, we can create agents for any administrative or sales task.",
-            userImg: willlogo,
             userName: "William V.",
             createdAt: "2024-09-02T00:00:00Z",
             transition:
@@ -203,7 +197,6 @@ const features = [
               <div className="flex items-center gap-2">
                 <div className="avatar">
                   <div className="w-7 rounded-full">
-                    <img src={reply.userImg} alt={reply.userName} />
                   </div>
                 </div>
                 <div className=""> {reply.userName} </div>

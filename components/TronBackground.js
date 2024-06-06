@@ -45,7 +45,7 @@ const TronBackground = ({ startAnimation }) => {
         clockwise: false,
       },
       {
-        color: "bg-base-200", // Tailwind accent color
+        color: "bg-accent", // Tailwind accent color
         x: 0,
         y: 0,
         path: [],
@@ -54,7 +54,7 @@ const TronBackground = ({ startAnimation }) => {
         clockwise: true,
       },
       {
-        color: "bg-neutral", // Tailwind neutral color
+        color: "bg-white", // Tailwind neutral color
         x: 0,
         y: 0,
         path: [],
