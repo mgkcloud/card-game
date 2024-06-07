@@ -66,7 +66,7 @@ const ButtonLead = ({ extraStyle }) => {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <input type="hidden" name="lead-form" value="lead_form" />
+      <input type="hidden" name="lead-form" value="lead-form" />
 
    
       <button
