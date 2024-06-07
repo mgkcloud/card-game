@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+
 // This component is used to collect the emails from the landing page
 // You'd use this if your product isn't ready yet or you want to collect leads
 // For instance: A popup to send a freebie, joining a waitlist, etc.
@@ -11,6 +12,7 @@ const ButtonLead = ({ extraStyle }) => {
   const [process, setProcess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -44,43 +46,50 @@ const ButtonLead = ({ extraStyle }) => {
   };
 
   return (
-    <form
-      className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
-      onSubmit={handleSubmit}
-      data-netlify="true"
-      netlify
-      name="lead-form"
-    >
-      <input
-        required
-        type="text"
-        value={process}
-        placeholder="A task you're looking to automate"
-        className="input input-bordered w-full placeholder:opacity-60"
-        onChange={(e) => setProcess(e.target.value)}
-      />
-      <input
-        required
-        type="email"
-        value={email}
-        autoComplete="email"
-        placeholder="your@business-email.com"
-        className="input input-bordered w-full placeholder:opacity-60"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input type="hidden" name="form-name" value="lead-form" />
-      <button
-        className="btn btn-primary btn-block"
-        type="submit"
-        disabled={isDisabled}
+    <>
+      {/* Hidden HTML Form */}
+      <form name="lead-form" data-netlify="true" netlify>
+        <input type="hidden" name="form-name" value="lead-form" />
+        <input type="text" name="process" />
+        <input type="email" name="email" />
+        <div data-netlify-recaptcha="true"></div>
+      </form>
+
+      <form
+        className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
+        onSubmit={handleSubmit}
       >
-        Generate now
-        {isLoading && (
-          <span className="loading loading-spinner loading-xs"></span>
-        )}
-      </button>
-      <div data-netlify-recaptcha="true"></div>
-    </form>
+        <input
+          required
+          type="text"
+          value={process}
+          placeholder="A task you're looking to automate"
+          className="input input-bordered w-full placeholder:opacity-60"
+          onChange={(e) => setProcess(e.target.value)}
+        />
+        <input
+          required
+          type="email"
+          value={email}
+          autoComplete="email"
+          placeholder="your@business-email.com"
+          className="input input-bordered w-full placeholder:opacity-60"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input type="hidden" name="form-name" value="lead-form" />
+        <button
+          className="btn btn-primary btn-block"
+          type="submit"
+          disabled={isDisabled}
+        >
+          Generate now
+          {isLoading && (
+            <span className="loading loading-spinner loading-xs"></span>
+          )}
+        </button>
+        <div data-netlify-recaptcha="true"></div>
+      </form>
+    </>
   );
 };
 
