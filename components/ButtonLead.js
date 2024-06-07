@@ -42,6 +42,7 @@ const ButtonLead = ({ extraStyle }) => {
       className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
       onSubmit={handleSubmit}
       netlify
+      name="lead-form"
     >
 
       <input
@@ -65,7 +66,7 @@ const ButtonLead = ({ extraStyle }) => {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <input type="hidden" name="lead-form" value="main_lead_form" />
+      <input type="hidden" name="lead-form" value="lead_form" />
 
    
       <button
