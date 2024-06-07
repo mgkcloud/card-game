@@ -30,7 +30,7 @@ const MatrixBackground = ({ onLoad }) => {
       ...Array(1).fill(emojiGroups.low).flat()
     ];
 
-    const fontSize = 40; // Reduced font size for better performance
+    const fontSize = 35; // Reduced font size for better performance
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }, () => Math.random() * canvas.height / fontSize);
     const columnEmojis = Array.from({ length: columns }, () => emojis[Math.floor(Math.random() * emojis.length)]);
@@ -51,7 +51,7 @@ const MatrixBackground = ({ onLoad }) => {
           drops[i] = 0;
         }
 
-        drops[i] += 0.005; // Increased speed for smoother animation
+        drops[i] += 0.01; // Increased speed for smoother animation
       }
 
       requestAnimationFrame(draw);
@@ -85,6 +85,10 @@ const MatrixBackground = ({ onLoad }) => {
     height: '120%',
     opacity: '0.3',
     pointerEvents: 'none',
+      // Force hardware acceleration
+  transform: 'translateZ(0)',
+  // Use webkit prefixes
+  WebkitTransform: 'translateZ(0)',
   };
 
   return <canvas ref={canvasRef} style={canvasStyle} />;

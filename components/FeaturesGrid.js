@@ -49,9 +49,9 @@ const features = [
   {
     title: "Allocate leads to the right salesperson. Easy.",
     description: "Auto-categorisation can reduce your lead response time from 24 hours+ to less than 20 minutes.",
-    styles: "md:col-span-2 bg-base-300 text-base-content",
+    styles: "md:col-span-2 bg-base-300 text-base-content ",
     demo: (
-      <div className="px-6 max-w-[600px] flex flex-col gap-4 overflow-hidden">
+      <div className="px-6 max-w-[600px] flex flex-col gap-4 overflow-hidden ">
         {[
           {
             title: "Heath Moore, Director",
@@ -218,13 +218,13 @@ const features = [
 ];
 const FeaturesGrid = () => {
   return (
-    <section className="flex justify-center items-center w-full bg-base-200/50 text-base-content py-20 lg:py-32">
-      <div className="flex flex-col max-w-[82rem] gap-16 md:gap-20 px-4">
+    <section className="flex justify-center items-center w-full bg-base-200/50 text-base-content">
+      <div className="flex flex-col max-w-[82rem] gap-16 md:gap-20 px-4 max-w-7xl mx-auto px-8 py-16 md:py-32 text-center md:text-start">
         <h2 className="max-w-4xl font-black text-4xl md:text-6xl tracking-[-0.01em]">
           Enhance your sales<br />with
           <span className="underline decoration-dashed underline-offset-8 decoration-base-300">
             &nbsp;AI-Driven&nbsp;
-          </span>
+          </span><br />
           automation {" "}
         </h2>
         <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-[82rem]">

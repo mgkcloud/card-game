@@ -38,8 +38,8 @@ const Modal = ({ isModalOpen, setIsModalOpen, children }) => {
             >
               <Dialog.Panel className="relative max-w-3xl h-full overflow-visible transform text-left align-middle shadow-2xl transition-all rounded-xl bg-base-100 p-6 md:p-8">
                 <div className="flex justify-between items-center mb-4">
-                  <Dialog.Title as="h2" className="font-semibold">
-                    
+                  <Dialog.Title as="h2" className="font-semibold text-center font-bold text-xl tracking-tight">
+                    Generate your AI agent lineup
                   </Dialog.Title>
                   <button
                     className="btn btn-square btn-ghost btn-sm"
