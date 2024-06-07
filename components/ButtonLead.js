@@ -65,8 +65,9 @@ const ButtonLead = ({ extraStyle }) => {
         onChange={(e) => setEmail(e.target.value)}
       />
 
+      <input type="hidden" name="lead-form" value="main_lead_form" />
 
-
+   
       <button
         className="btn btn-primary btn-block"
         type="submit"
@@ -90,6 +91,7 @@ const ButtonLead = ({ extraStyle }) => {
           </svg>
         )}
       </button>
+      <div data-netlify-recaptcha="true"></div>
     </form>
   );
 };
