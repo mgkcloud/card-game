@@ -47,14 +47,6 @@ const ButtonLead = ({ extraStyle }) => {
 
   return (
     <>
-      {/* Hidden HTML Form */}
-      <form name="lead-form" data-netlify="true" netlify>
-        <input type="hidden" name="form-name" value="lead-form" />
-        <input type="text" name="process" />
-        <input type="email" name="email" />
-        <div data-netlify-recaptcha="true"></div>
-      </form>
-
       <form
         className={`w-full max-w-xs space-y-3 ${extraStyle ? extraStyle : ""}`}
         onSubmit={handleSubmit}
