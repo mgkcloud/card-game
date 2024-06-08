@@ -12,7 +12,7 @@ const WithWithout = () => {
       <div className="relative max-w-5xl mx-auto px-8 py-16 md:py-16 ">
   
         <h2 className="text-center text-white font-extrabold text-3xl md:text-5xl tracking-tight mb-12 md:mb-20">
-          We'll be right on this
+          We&apos;ll be right on this
         </h2>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
