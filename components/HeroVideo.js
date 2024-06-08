@@ -1,6 +1,6 @@
 // HeroVideo.js
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import ButtonLead from "@/components/ButtonLead";
 import MatrixBackground from '@/components/MatrixBackground';
@@ -10,24 +10,47 @@ import emojibg from "@/app/emojibg.png";
 const HeroVideo = () => {
     const [isPlaying, setIsPlaying] = useState(false);
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
-    const handlePlay = () => {
-        setIsPlaying(true);
-    };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+};
+  }, []);
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+};
 
   const handleCanvasLoad = () => {
     setIsCanvasLoaded(true);
-    };
+  };
 
   const style = "rounded-2xl aspect-square w-full sm:w-[26rem]";
   const size = {
     width: 500,
     height: 500,
-};
+  };
   const path = 'https://d3m8mk7e1mf7xn.cloudfront.net/app/newsletter.webm';
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', overflow: 'hidden' }} ref={sectionRef}>
       <div style={{ position: 'relative', zIndex: 1 }}>
         <section className="relative hero overflow-hidden min-h-65 flex items-center justify-center bg-black">
           <Image
@@ -37,7 +60,7 @@ const HeroVideo = () => {
             style={{ filter: 'blur(2px)' }}
             fill
           />
-          <MatrixBackground onLoad={handleCanvasLoad} />
+          <MatrixBackground onLoad={handleCanvasLoad} isVisible={isVisible} />
           <div className="relative w-full max-w-4xl">
             <div className="relative p-12">
               <div className="flex text-white text-center flex-col gap-10 lg:gap-14 items-center justify-center text-center lg:text-left lg:items-start">

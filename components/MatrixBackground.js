@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
-const MatrixBackground = ({ onLoad }) => {
+const MatrixBackground = ({ isVisible, onLoad }) => {
   const canvasRef = useRef(null);
+  const animationRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,7 +31,7 @@ const MatrixBackground = ({ onLoad }) => {
       ...Array(1).fill(emojiGroups.low).flat()
     ];
 
-    const fontSize = 35; // Reduced font size for better performance
+    const fontSize = 40; // Reduced font size for better performance
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }, () => Math.random() * canvas.height / fontSize);
     const columnEmojis = Array.from({ length: columns }, () => emojis[Math.floor(Math.random() * emojis.length)]);
@@ -42,22 +43,28 @@ const MatrixBackground = ({ onLoad }) => {
       ctx.font = `${fontSize}px Arial`;
 
       for (let i = 0; i < drops.length; i++) {
-        const text = columnEmojis[i];
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-        ctx.fillText(text, x, y);
-
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        for (let j = 0; j < 1; j++) { // Draw more emojis in each column
+          const text = columnEmojis[i];
+          const x = i * fontSize;
+          const y = (drops[i] + j) * fontSize;
+          ctx.fillText(text, x, y);
+  
+          if (y > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
         }
+    
 
         drops[i] += 0.01; // Increased speed for smoother animation
       }
 
-      requestAnimationFrame(draw);
+      animationRef.current = requestAnimationFrame(draw);
     };
 
-    draw();
+    if (isVisible) {
+   
+      draw(); // Start the animation
+    }
 
     // Call the onLoad callback to indicate the canvas is running
     if (onLoad) {
@@ -66,8 +73,11 @@ const MatrixBackground = ({ onLoad }) => {
 
     return () => {
       window.removeEventListener('resize', debouncedResize);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [onLoad]);
+  }, [isVisible, onLoad]);
 
   const debounce = (func, wait) => {
     let timeout;
@@ -85,13 +95,14 @@ const MatrixBackground = ({ onLoad }) => {
     height: '120%',
     opacity: '0.3',
     pointerEvents: 'none',
-      // Force hardware acceleration
-  transform: 'translateZ(0)',
-  // Use webkit prefixes
-  WebkitTransform: 'translateZ(0)',
+    // Force hardware acceleration
+    transform: 'translateZ(0)',
+    // Use webkit prefixes
+    WebkitTransform: 'translateZ(0)',
   };
 
   return <canvas ref={canvasRef} style={canvasStyle} />;
 };
 
 export default MatrixBackground;
+

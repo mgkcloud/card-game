@@ -1,15 +1,28 @@
 import { useEffect, useRef } from "react";
-import classNames from "classnames";
+import lottie from "lottie-web";
 
 const TronBackground = ({ startAnimation }) => {
   const canvasRef = useRef(null);
   const offscreenCanvasRef = useRef(null);
-  const animationStarted = useRef(false); // Track if animation has started
-  const ridersInitialized = useRef(false); // Track if riders have been initialized
+  const animationStarted = useRef(false);
+  const ridersInitialized = useRef(false);
+  const lottieRef = useRef(null);
 
-  useEffect(() => {
-    if (!startAnimation || animationStarted.current) return; // Exit early if startAnimation is false or animation has already started
-    animationStarted.current = true; // Mark animation as started
+  const restartAnimation = () => {
+    animationStarted.current = false;
+    ridersInitialized.current = false;
+    initializeAnimation();
+
+    // Reset and play the Lottie animation
+    if (lottieRef.current) {
+      lottieRef.current.stop(); // Stop the animation
+      lottieRef.current.play(); // Play the animation
+    }
+  };
+
+  const initializeAnimation = () => {
+    if (!startAnimation || animationStarted.current) return;
+    animationStarted.current = true;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -20,11 +33,10 @@ const TronBackground = ({ startAnimation }) => {
     offscreenCanvasRef.current = offscreenCanvas;
 
     const speed = 20;
-    let buffer = 200; // Buffer around each node
-    let lineWidth = 24; // Line width for riders
-    let shadowBlur = 30; // Shadow blur for riders
+    let buffer = 200;
+    let lineWidth = 24;
+    let shadowBlur = 30;
 
-    // Adjust buffer and line width for mobile devices
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
       buffer = 50;
@@ -34,28 +46,30 @@ const TronBackground = ({ startAnimation }) => {
 
     let nodes = [];
     const riders = [
+
       {
-        color: "bg-primary", // Tailwind primary color
+        color: "bg-white",
         x: 0,
         y: 0,
         path: [],
         nodeIndex: 0,
-        direction: "right",
-        clockwise: true,
-        completed: false,
-      },
-      {
-        color: "bg-secondary", // Tailwind secondary color
-        x: 0,
-        y: 0,
-        path: [],
-        nodeIndex: 0,
-        direction: "right",
+        direction: "left",
         clockwise: false,
         completed: false,
       },
       {
-        color: "bg-accent", // Tailwind accent color
+        color: "bg-primary",
+        x: 0,
+        y: 0,
+        path: [],
+        nodeIndex: 0,
+        direction: "right",
+        clockwise: true,
+        completed: false,
+      },
+
+      {
+        color: "bg-accent",
         x: 0,
         y: 0,
         path: [],
@@ -65,7 +79,7 @@ const TronBackground = ({ startAnimation }) => {
         completed: false,
       },
       {
-        color: "bg-white", // Tailwind neutral color
+        color: "bg-secondary",
         x: 0,
         y: 0,
         path: [],
@@ -90,7 +104,7 @@ const TronBackground = ({ startAnimation }) => {
     };
 
     const initializeNodes = () => {
-      const gridSize = 4; // Number of nodes
+      const gridSize = 4;
       const gridSpacingX = canvas.width / (gridSize + 1);
       nodes = Array.from({ length: gridSize }, (_, i) => ({
         x: (i + 1) * gridSpacingX,
@@ -125,11 +139,10 @@ const TronBackground = ({ startAnimation }) => {
 
     const drawLine = (path, colorClass) => {
       const colorElement = document.createElement('div');
-      colorElement.className = classNames(colorClass, 'hidden');
+      colorElement.className = `${colorClass} hidden`;
       document.body.appendChild(colorElement);
       const color = getComputedStyle(colorElement).backgroundColor;
       document.body.removeChild(colorElement);
-
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
       ctx.shadowColor = color;
@@ -144,10 +157,8 @@ const TronBackground = ({ startAnimation }) => {
 
     const updateRider = (rider) => {
       if (rider.completed) return;
-
       const targetNode = nodes[rider.nodeIndex];
       const offset = rider.clockwise ? buffer : -buffer;
-
       if (rider.direction === "right") {
         rider.x += speed;
         if (rider.x >= targetNode.x + offset) {
@@ -170,14 +181,12 @@ const TronBackground = ({ startAnimation }) => {
           rider.direction = "right";
         }
       }
-
       // Check if rider has reached the end goal
       if (isMobile && rider.y >= canvas.height) {
         rider.completed = true;
       } else if (!isMobile && rider.x >= canvas.width) {
         rider.completed = true;
       }
-
       rider.path.push({ x: rider.x, y: rider.y });
     };
 
@@ -191,16 +200,40 @@ const TronBackground = ({ startAnimation }) => {
       requestAnimationFrame(animate);
     };
 
-    // window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
     animate();
+  };
 
+  useEffect(() => {
+    initializeAnimation();
+    // Initialize Lottie animation
+    lottieRef.current = lottie.loadAnimation({
+      container: document.getElementById('lottie-refresh'),
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: '/reload.json',
+    });
+
+    // Clean up Lottie animation on component unmount
     return () => {
-      // window.removeEventListener("resize", resizeCanvas);
+      if (lottieRef.current) {
+        lottieRef.current.destroy();
+      }
     };
   }, [startAnimation]);
 
-  return <canvas ref={canvasRef} className="w-full h-full bg-black"></canvas>;
+  return (
+    <div className="relative w-full h-full">
+      <canvas ref={canvasRef} className="w-full h-full bg-black"></canvas>
+      <button
+        onClick={restartAnimation}
+        className="absolute bottom-4 right-4 p-2 bg-white rounded-full shadow-md"
+      >
+        <div id="lottie-refresh" className="w-8 h-8"></div>
+      </button>
+    </div>
+  );
 };
 
 export default TronBackground;
