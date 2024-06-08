@@ -1,82 +1,77 @@
-import TronBackground from "@/components/TronBackground";
+// components/WithWithout.js
 
-// A useful component when your product is challenging the status quo.
-// Highlight the current pain points (left) and how your product is solving them (right)
-// Try to match the lines from left to right, so the user can easily compare the two columns
+import React, { useState } from 'react';
+import { InlineWidget } from 'react-calendly';
+import WithWithoutCard from './WithWithoutCard';
+
 const WithWithout = () => {
+  const [activeCard, setActiveCard] = useState(0);
+
+  const cardData = [
+    {
+      title: 'Transform your sales with AI-powered automation',
+      color: 'bg-green-500',
+      textColor: 'text-white',
+      items: [
+        'Qualify and engage leads 24/7',
+        'Automate personalised follow-ups',
+        'Reduce response times',
+        'Integrates with your CRM',
+        'Tailored customer journeys',
+      ],
+    },
+    {
+      title: 'Relying on outdated sales tactics?',
+      color: 'bg-red-500',
+      textColor: 'text-white',
+      items: [
+        'Struggling to engage leads',
+        'Wasting time on unqualified leads',
+        'Experiencing slow response times',
+        'Lacking a centralised system for lead data',
+        'Not personalising the customer journey.',
+      ],
+    },
+  ];
+
+  const handleSwipe = (index) => {
+    setActiveCard(index);
+  };
 
   return (
-    <section className="bg-base-100 relative hero overflow-hidden max-h-[80vh] ">
-          <TronBackground startAnimation={true} />
-          <div className="relative hero-overlay bg-opacity-90"></div>
-      <div className="relative max-w-5xl mx-auto px-8 py-16 md:py-16 ">
-  
-        <h2 className="text-center text-white font-extrabold text-3xl md:text-5xl tracking-tight mb-12 md:mb-20">
-          We&apos;ll be right on this
+    <section className="bg-neutral text-neutral-content relative min-h-[80vh] overflow-hidden">
+      <div className="relative hero-overlay bg-opacity-90"></div>
+      <div className="container mx-auto px-8 py-16 md:py-16 flex flex-col items-center justify-center">
+        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight text-center mb-12 md:mb-20">
+          Make a choice: Outdated Sales or AI Automation?
         </h2>
-
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
-          <div className="bg-error/20 text-error p-8 md:p-12 rounded-lg w-full ">
-            <h3 className="font-bold text-lg mb-4 ">
-              Stripe invoices without ZenVoice
-            </h3>
-
-            <ul className="list-disc list-inside space-y-1.5 ">
-              {/* Pains the user is experiencing by not using your product */}
-              {[
-                "Manually create invoices",
-                "Or pay up to $2 per invoice",
-                "Waste hours in customer support",
-                "Can’t update details once sent (VAT, Tax ID)",
-                "Can't make invoices for previous purchases",
-              ].map((item, index) => (
-                <li key={index} className="flex gap-2 items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="w-4 h-4 shrink-0 opacity-75"
-                  >
-                    <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
+        <div className="flex flex-col-reverse md:flex-row max-w-[900px] items-center justify-center w-full">
+          <div
+            className="relative w-full md:w-1/2"
+            style={{ height: 'calc(20vw * 1.4)', minHeight: '200px' }}
+          >
+            {cardData.map((card, index) => (
+              <WithWithoutCard
+                key={index}
+                card={card}
+                active={index === activeCard}
+                index={index}
+                handleSwipe={handleSwipe}
+              />
+            ))}
           </div>
-
-          <div className="bg-success/20 text-success p-8 md:p-12 rounded-lg w-full">
-            <h3 className="font-bold text-lg mb-4">
-              Stripe invoices + ZenVoice
-            </h3>
-
-            <ul className="list-disc list-inside space-y-1.5  ">
-              {/* Features of your product fixing the pain (try to match each with/withot lines) */}
-              {[
-                "Self-serve invoices",
-                `One-time payment for unlimited invoices`,
-                "No more customer support",
-                "Editable invoices to stay compliant",
-                "Invoices for any payment, even past ones",
-              ].map((item, index) => (
-                <li key={index} className="flex gap-2 items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="w-4 h-4 shrink-0 opacity-75"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <div className="w-full md:w-1/2 mt-8 md:mt-0 md:ml-8">
+            <div className="rounded-2xl border-2 border-gray-800 bg-white text-white p-6 overflow-x-hidden overflow-y-scroll relative" style={{ height: '500px' }}>
+              <InlineWidget
+                url="https://calendly.com/will-feistyagency/30min"
+                styles={{
+                  height: '1000px',
+                  transform: 'scale(0.85)',
+                  transformOrigin: 'middle',
+                  marginTop: '-290px'
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
+// components/Header.js
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/feistylogo.svg";
@@ -10,8 +11,6 @@ import ButtonSignin from "@/components/ButtonSignin";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import config from "@/config";
 import AnnouncementBar from "@/components/AnnouncementBar";
-
-
 
 const links = [
   {
@@ -28,27 +27,26 @@ const links = [
   },
 ];
 
-const cta = <ButtonSignin extraStyle="btn-primary" />;
-
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const Header = () => {
+  const router = useRouter();
+  const pathName = router.pathname;
 
+  // Define the paths within the conversion flow where you want to hide the button
+  const conversionFlowPaths = ["/thank-you", /* Add other paths here */];
+  const showButton = !conversionFlowPaths.includes(pathName);
 
   const supabase = createClientComponentClient();
-
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
-
       setUser(data.user);
     };
-
     getUser();
   }, [supabase]);
-
 
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -65,9 +63,7 @@ const Header = () => {
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
-        <div className="flex lg:flex-1">
-
-        </div>
+        <div className="flex lg:flex-1"></div>
         {/* Your logo/name on large screens */}
         <div className="flex lg:flex-1 lg:justify-center">
           <Link
@@ -83,7 +79,6 @@ const Header = () => {
               width={32}
               height={32}
             />
-
           </Link>
           <span className="text-xs font-semibold self-end text-gray-500">AGENCY</span>
         </div>
@@ -92,6 +87,7 @@ const Header = () => {
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 hidden"
+            onClick={() => setIsOpen(!isOpen)}
           >
             <span className="sr-only">Open main menu</span>
             <svg
@@ -110,7 +106,6 @@ const Header = () => {
             </svg>
           </button>
         </div>
-
         {/* Your links on large screens */}
         <div className="hidden lg:justify-center lg:gap-12 lg:items-center">
           {links.map((link) => (
@@ -124,22 +119,20 @@ const Header = () => {
             </Link>
           ))}
         </div>
-
-
-
         {/* CTA on large screens */}
         <div className="hidden lg:flex lg:justify-end lg:flex-1">
-
-          {user ? (
-            <ButtonAccount />) : (
-            <ButtonSignin />
-
+          {showButton && (
+            <>
+              {user ? (
+                <ButtonAccount />
+              ) : (
+                <ButtonSignin />
+              )}
+           
+           </>
           )}
-
         </div>
-
       </nav>
-
       {/* Mobile menu, show/hide based on menu state. */}
       <div className={`relative z-50 ${isOpen ? "" : "hidden"}`}>
         <div
@@ -184,7 +177,6 @@ const Header = () => {
               </svg>
             </button>
           </div>
-
           {/* Your links on small screens */}
           <div className="flow-root mt-6">
             <div className="py-4">
@@ -203,7 +195,15 @@ const Header = () => {
             </div>
             <div className="divider"></div>
             {/* Your CTA on small screens */}
-            <div className="flex flex-col">{cta}</div>
+            {showButton && (
+              <div className="flex flex-col">
+                {user ? (
+                  <ButtonAccount />
+                ) : (
+                  <ButtonSignin />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

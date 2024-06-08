@@ -10,6 +10,7 @@ const TronBackground = ({ startAnimation }) => {
   const lottieRef = useRef(null);
   const animationFrameId = useRef(null);
 
+  // Function to restart the animation
   const restartAnimation = () => {
     animationStarted.current = false;
     ridersInitialized.current = false;
@@ -22,30 +23,29 @@ const TronBackground = ({ startAnimation }) => {
     }
   };
 
+  // Function to initialize the animation
   const initializeAnimation = () => {
     if (!startAnimation || animationStarted.current) return;
     animationStarted.current = true;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+
+    // Create an offscreen canvas for drawing nodes
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = canvas.width;
     offscreenCanvas.height = canvas.height;
     const offscreenCtx = offscreenCanvas.getContext('2d');
     offscreenCanvasRef.current = offscreenCanvas;
 
+    // Animation settings
     const speed = 20;
     let buffer = 200;
     let lineWidth = 24;
     let shadowBlur = 30;
-
-    const isMobile = canvas.width <= 768;
-    if (isMobile) {
-      buffer = 50;
-      lineWidth = 40;
-      shadowBlur = 4;
-    }
-
+    let isMobile; // Declare isMobile here, but don't assign a value yet
+    // Adjust settings for mobile devices
+    // We'll calculate isMobile later, after resizing the canvas
     let nodes = [];
     const riders = [
       {
@@ -54,7 +54,7 @@ const TronBackground = ({ startAnimation }) => {
         y: 0,
         path: [],
         nodeIndex: 0,
-        direction: "left",
+        direction: "down",
         clockwise: false,
         completed: false,
       },
@@ -64,7 +64,7 @@ const TronBackground = ({ startAnimation }) => {
         y: 0,
         path: [],
         nodeIndex: 0,
-        direction: "right",
+        direction: "down",
         clockwise: true,
         completed: false,
       },
@@ -74,7 +74,7 @@ const TronBackground = ({ startAnimation }) => {
         y: 0,
         path: [],
         nodeIndex: 0,
-        direction: "right",
+        direction: "down",
         clockwise: true,
         completed: false,
       },
@@ -84,28 +84,46 @@ const TronBackground = ({ startAnimation }) => {
         y: 0,
         path: [],
         nodeIndex: 0,
-        direction: "right",
+        direction: "down",
         clockwise: false,
         completed: false,
       },
     ];
 
+    // Function to resize the canvas and reinitialize elements
     const resizeCanvas = () => {
       if (parentRef.current) {
         const parent = parentRef.current;
         canvas.width = parent.clientWidth;
         canvas.height = parent.clientHeight;
+
+        // Resize the offscreen canvas as well
         offscreenCanvas.width = canvas.width;
         offscreenCanvas.height = canvas.height;
+
+        // NOW calculate isMobile after the canvas is sized correctly
+        isMobile = canvas.width <= 768;
+
+        // Adjust settings for mobile devices
+        if (isMobile) {
+          buffer = 25;
+          lineWidth = 20;
+          shadowBlur = 4;
+        }
+
         initializeNodes();
+
+        // Initialize riders only once
         if (!ridersInitialized.current) {
           initializeRiders();
           ridersInitialized.current = true;
         }
+
         drawNodes();
       }
     };
 
+    // Function to initialize the nodes for the riders to follow
     const initializeNodes = () => {
       const gridSize = 4;
       const gridSpacingX = canvas.width / (gridSize + 1);
@@ -115,6 +133,7 @@ const TronBackground = ({ startAnimation }) => {
       }));
     };
 
+    // Function to initialize the riders' starting positions and properties
     const initializeRiders = () => {
       riders.forEach((rider, index) => {
         if (isMobile) {
@@ -131,6 +150,7 @@ const TronBackground = ({ startAnimation }) => {
       });
     };
 
+    // Function to draw the nodes on the offscreen canvas
     const drawNodes = () => {
       const offscreenCtx = offscreenCanvasRef.current.getContext('2d');
       offscreenCtx.clearRect(0, 0, offscreenCanvasRef.current.width, offscreenCanvasRef.current.height);
@@ -142,12 +162,15 @@ const TronBackground = ({ startAnimation }) => {
       });
     };
 
+    // Function to draw a line representing the rider's path
     const drawLine = (path, colorClass) => {
+      // Create a temporary element to get the computed background color
       const colorElement = document.createElement('div');
       colorElement.className = `${colorClass} hidden`;
       document.body.appendChild(colorElement);
       const color = getComputedStyle(colorElement).backgroundColor;
       document.body.removeChild(colorElement);
+
       ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
       ctx.shadowColor = color;
@@ -160,10 +183,14 @@ const TronBackground = ({ startAnimation }) => {
       ctx.stroke();
     };
 
+    // Function to update the rider's position and path
     const updateRider = (rider) => {
       if (rider.completed) return;
+
       const targetNode = nodes[rider.nodeIndex];
       const offset = rider.clockwise ? buffer : -buffer;
+
+      // Update rider's position based on direction
       if (rider.direction === "right") {
         rider.x += speed;
         if (rider.x >= targetNode.x + offset) {
@@ -186,33 +213,38 @@ const TronBackground = ({ startAnimation }) => {
           rider.direction = "right";
         }
       }
-      // Check if rider has reached the end goal
+
+      // Check if the rider has reached the end
       if (isMobile && rider.y >= canvas.height) {
         rider.completed = true;
       } else if (!isMobile && rider.x >= canvas.width) {
         rider.completed = true;
       }
+
       rider.path.push({ x: rider.x, y: rider.y });
 
+      // Limit the path length to prevent performance issues
       if (rider.path.length > 1000) {
         rider.path.shift();
       }
     };
 
+    // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the offscreen canvas onto the main canvas
       ctx.drawImage(offscreenCanvasRef.current, 0, 0);
+
       riders.forEach((rider) => {
         updateRider(rider);
         drawLine(rider.path, rider.color);
       });
+
       animationFrameId.current = requestAnimationFrame(animate);
     };
 
-    resizeCanvas();
-    animate();
-
-
+    // Debounce the resize event listener to improve performance
     const debounce = (func, wait) => {
       let timeout;
       return (...args) => {
@@ -223,25 +255,32 @@ const TronBackground = ({ startAnimation }) => {
 
     const debouncedResizeCanvas = debounce(resizeCanvas, 100);
 
+    // Event listeners for resizing and cleanup
     window.addEventListener('resize', debouncedResizeCanvas);
+
+    // Initial setup
+    resizeCanvas(); // This will also correctly calculate isMobile now
+    animate();
 
     // Cleanup function to cancel animation frame on unmount
     return () => {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
+      window.removeEventListener('resize', debouncedResizeCanvas); // Remove the resize event listener
     };
   };
 
   useEffect(() => {
     initializeAnimation();
+
     // Initialize Lottie animation
     lottieRef.current = lottie.loadAnimation({
       container: document.getElementById('lottie-refresh'),
       renderer: 'svg',
       loop: false,
       autoplay: false,
-      path: '/reload.json',
+      path: '/reload.json', // Make sure this path is correct
     });
 
     // Clean up Lottie animation on component unmount
@@ -266,4 +305,3 @@ const TronBackground = ({ startAnimation }) => {
 };
 
 export default TronBackground;
-

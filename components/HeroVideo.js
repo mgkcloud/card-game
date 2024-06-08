@@ -67,11 +67,11 @@ const HeroVideo = () => {
                 <h1 className="font-extrabold text-center text-4xl lg:text-6xl tracking-tight md:-mb-4">
                   Automate, enrich, and qualify your inbound leads
                 </h1>
-                <p className="text-lg opacity-80 text-center leading-relaxed">
-                  We build solutions for the future. We&apos;ll integrate your existing systems into a decision making agent, designed to complete a range of sales and operational tasks. Supercharge your dealflow.
+                <p className="text-lg opacity-80 text-center leading-relaxed  pb-4 md:pb-0">
+                  We build solutions for the future. We&apos;ll integrate your existing systems into a decision making agent, designed to complete a range of sales and operational tasks.<br /><br /><span className='font-bold underline'>Supercharge your dealflow.</span>
                 </p>
               </div>
-              <div className='flex flex-col items-center justify-center w-full p-2 lg:p-12 pb-0 lg:pb-4'>
+              <div className='flex flex-col items-center justify-center w-full p-2 lg:p-4 pb-0 lg:pb-4'>
                 <ButtonLead />
                 <TestimonialsAvatars />
               </div>

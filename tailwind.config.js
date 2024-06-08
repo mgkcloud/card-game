@@ -64,7 +64,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require('tailwindcss-animated'),
+    require("daisyui"),
+  ],
   daisyui: {
     themes: [
       "light"

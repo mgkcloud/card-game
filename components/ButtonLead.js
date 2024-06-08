@@ -23,6 +23,19 @@ const ButtonLead = ({ extraStyle }) => {
     formData.append("process", process);
 
     try {
+      // Additional API check before form submission
+      // const checkResponse = await fetch("https://external-api.com/check", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ email, process }),
+      // });
+
+      // const checkResult = await checkResponse.json();
+
+      // if (!checkResponse.ok || !checkResult.isValid) {
+      //   throw new Error("External validation failed");
+      // }
+
       const response = await fetch("https://hook.eu2.make.com/y4lf4j3cjyrn7n9wjt6t1vv1apc5ocuv", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -30,13 +43,16 @@ const ButtonLead = ({ extraStyle }) => {
       });
 
       if (response.ok) {
-      toast.success("Thanks! We're generating your agents...");
-      setEmail("");
-      setProcess("");
-      setIsDisabled(true);
+        toast.success("Thanks! We're generating your agents...");
+        setEmail("");
+        setProcess("");
+        setIsDisabled(true);
+
+        // Redirect to the thank you page
+        window.location.href = '/thank-you'; 
       } else {
         toast.error("Something went wrong. Please try again.");
-    }
+      }
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Something went wrong. Please try again.");
@@ -55,7 +71,7 @@ const ButtonLead = ({ extraStyle }) => {
           required
           type="text"
           value={process}
-          placeholder="A task you're looking to automate"
+          placeholder="A task you want to automate"
           className="input input-bordered w-full placeholder:opacity-60"
           onChange={(e) => setProcess(e.target.value)}
         />
