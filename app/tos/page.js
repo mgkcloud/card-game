@@ -57,39 +57,37 @@ const TOS = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {`Last Updated: September 26, 2023
+          {`Terms & Services
 
-Welcome to ShipFast!
+Effective Date: June 8, 2024
 
-These Terms of Service ("Terms") govern your use of the ShipFast website at https://shipfa.st ("Website") and the services provided by ShipFast. By using our Website and services, you agree to these Terms.
+1. Introduction
+Welcome to Feisty Agency. By accessing or using our website, you agree to be bound by these Terms & Services.
 
-1. Description of ShipFast
+2. Ownership
+Feisty Agency retains ownership of all code and agent systems created for clients. Client data remains the property of the client.
 
-ShipFast is a platform that offers a JavaScript code boilerplate to assist entrepreneurs in launching their startups more efficiently.
-
-2. Ownership and Usage Rights
-
-When you purchase a package from ShipFast, you gain the right to download and use the code provided for creating applications. You own the code you create but do not have the right to resell it. We offer a full refund within 7 days of purchase, as specified in our refund policy.
-
-3. User Data and Privacy
-
-We collect and store user data, including name, email, and payment information, as necessary to provide our services. For details on how we handle your data, please refer to our Privacy Policy at https://shipfa.st/privacy-policy.
+3. User Data Collection
+We collect personal data, including name, email, and payment information. For more details, refer to our Privacy Policy.
 
 4. Non-Personal Data Collection
+We collect non-personal data through web cookies to enhance user experience.
 
-We use web cookies to collect non-personal data for the purpose of improving our services and user experience.
+5. Services Provided
+Feisty Agency provides AI-driven automation solutions designed to enhance sales and operational processes.
 
-5. Governing Law
+6. Governing Law
+These terms are governed by the laws of Australia.
 
-These Terms are governed by the laws of France.
+7. Updates to Terms
+Feisty Agency reserves the right to update these terms at any time. Users will be notified of updates via email.
 
-6. Updates to the Terms
+8. Contact Information
+For any questions or concerns, please contact us at: will@feistyagency.com
 
-We may update these Terms from time to time. Users will be notified of any changes via email.
+By using our services, you agree to these terms. Thank you for choosing Feisty Agency.
 
-For any questions or concerns regarding these Terms of Service, please contact us at marc@shipfa.st.
-
-Thank you for using ShipFast!`}
+Feisty Agency`}
         </pre>
       </div>
     </main>

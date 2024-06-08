@@ -57,51 +57,41 @@ const PrivacyPolicy = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {`Last Updated: 2023-08-25
+          {`Last Updated: 2024-06-08
 
-Thank you for visiting ShipFast ("we," "us," or "our"). This Privacy Policy outlines how we collect, use, and protect your personal and non-personal information when you use our website located at https://shipfa.st (the "Website").
+Introduction
+Feisty Agency ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website Feisty Agency.
 
-By accessing or using the Website, you agree to the terms of this Privacy Policy. If you do not agree with the practices described in this policy, please do not use the Website.
+Information We Collect
+Personal Data
+When you place an order on our website, we collect the following personal data:
 
-1. Information We Collect
+Name
+Email
+Payment Information
+Non-Personal Data
+We also collect non-personal data through the use of web cookies.
 
-1.1 Personal Data
+Purpose of Data Collection
+We collect and use your data for the purpose of order processing.
 
-We collect the following personal information from you:
+Data Sharing
+We do not share your personal data with any other parties.
 
-Name: We collect your name to personalize your experience and communicate with you effectively.
-Email: We collect your email address to send you important information regarding your orders, updates, and communication.
-Payment Information: We collect payment details to process your orders securely. However, we do not store your payment information on our servers. Payments are processed by trusted third-party payment processors.
+Children's Privacy
+We do not knowingly collect any data from children.
 
-1.2 Non-Personal Data
+Updates to This Privacy Policy
+We may update this Privacy Policy from time to time. When we do, we will notify you by email.
 
-We may use web cookies and similar technologies to collect non-personal information such as your IP address, browser type, device information, and browsing patterns. This information helps us to enhance your browsing experience, analyze trends, and improve our services.
+Contact Us
+If you have any questions about this Privacy Policy, please contact us at will@feistyagency.com.
 
-2. Purpose of Data Collection
+Feisty Agency
 
-We collect and use your personal data for the sole purpose of order processing. This includes processing your orders, sending order confirmations, providing customer support, and keeping you updated about the status of your orders.
+Copyright © 2024 - All rights reserved.
 
-3. Data Sharing
-
-We do not share your personal data with any third parties except as required for order processing (e.g., sharing your information with payment processors). We do not sell, trade, or rent your personal information to others.
-
-4. Children's Privacy
-
-ShipFast is not intended for children under the age of 13. We do not knowingly collect personal information from children. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us at the email address provided below.
-
-5. Updates to the Privacy Policy
-
-We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page, and we may notify you via email about significant changes.
-
-6. Contact Information
-
-If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
-
-Email: marc@shipfa.st
-
-For all other inquiries, please visit our Contact Us page on the Website.
-
-By using ShipFast, you consent to the terms of this Privacy Policy.`}
+By using Feisty Agency, you consent to the terms of this Privacy Policy.`}
         </pre>
       </div>
     </main>
