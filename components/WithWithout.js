@@ -6,17 +6,18 @@ import TronBackground from "@/components/TronBackground";
 const WithWithout = () => {
 
   return (
-    <section className="bg-base-100 relative hero overflow-hidden ">
+    <section className="bg-base-100 relative hero overflow-hidden max-h-[80vh] ">
           <TronBackground startAnimation={true} />
-      <div className="max-w-5xl mx-auto px-8 py-16 md:py-16 ">
+          <div className="relative hero-overlay bg-opacity-90"></div>
+      <div className="relative max-w-5xl mx-auto px-8 py-16 md:py-16 ">
   
         <h2 className="text-center text-white font-extrabold text-3xl md:text-5xl tracking-tight mb-12 md:mb-20">
           We'll be right on this
         </h2>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
-          <div className="bg-error/80 text-error p-8 md:p-12 rounded-lg w-full ">
-            <h3 className="font-bold text-lg mb-4 text-white">
+          <div className="bg-error/20 text-error p-8 md:p-12 rounded-lg w-full ">
+            <h3 className="font-bold text-lg mb-4 ">
               Stripe invoices without ZenVoice
             </h3>
 
@@ -44,12 +45,12 @@ const WithWithout = () => {
             </ul>
           </div>
 
-          <div className="bg-success/80 text-success p-8 md:p-12 rounded-lg w-full">
-            <h3 className="font-bold text-lg mb-4 text-white">
+          <div className="bg-success/20 text-success p-8 md:p-12 rounded-lg w-full">
+            <h3 className="font-bold text-lg mb-4">
               Stripe invoices + ZenVoice
             </h3>
 
-            <ul className="list-disc list-inside space-y-1.5 ">
+            <ul className="list-disc list-inside space-y-1.5  ">
               {/* Features of your product fixing the pain (try to match each with/withot lines) */}
               {[
                 "Self-serve invoices",

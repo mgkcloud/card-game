@@ -23,7 +23,7 @@ const ButtonLead = ({ extraStyle }) => {
     formData.append("process", process);
 
     try {
-      const response = await fetch("/", {
+      const response = await fetch("https://hook.eu2.make.com/y4lf4j3cjyrn7n9wjt6t1vv1apc5ocuv", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
