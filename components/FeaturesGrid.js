@@ -105,7 +105,7 @@ const features = [
     description: "We've worked with Ecom platforms, CRMs, Analytics, Email marketing, of various shapes and sizes. We'll connect the dots to make your data work for you.",
     styles: "md:col-span-2 bg-base-100 text-base-content",
     demo: (
-      <div className="flex left-0 w-full h-full pt-0 lg:pt-8 overflow-hidden -mt-4">
+      <div className="flex left-0 w-full h-full pt-0 lg:pt-8 overflow-y-visible -mt-4">
         <div className="-rotate-[8deg] flex min-w-max overflow-x-visible h-full lg:pt-4">
           {[
             {
@@ -232,7 +232,7 @@ const FeaturesGrid = () => {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[24rem] lg:h-[28rem] pt-6 overflow-hidden group`}
+                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[25rem] lg:h-[28rem] pt-6 overflow-hidden group`}
               >
                 <div className="px-6 space-y-2">
                   <h3 className="font-bold text-xl lg:text-3xl tracking-tight">

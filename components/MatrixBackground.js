@@ -48,21 +48,17 @@ const MatrixBackground = ({ isVisible, onLoad }) => {
           const x = i * fontSize;
           const y = (drops[i] + j) * fontSize;
           ctx.fillText(text, x, y);
-  
+
           if (y > canvas.height && Math.random() > 0.975) {
             drops[i] = 0;
           }
         }
-    
-
         drops[i] += 0.01; // Increased speed for smoother animation
       }
-
       animationRef.current = requestAnimationFrame(draw);
     };
 
     if (isVisible) {
-   
       draw(); // Start the animation
     }
 
@@ -71,6 +67,7 @@ const MatrixBackground = ({ isVisible, onLoad }) => {
       onLoad();
     }
 
+    // Cleanup function to remove event listeners and cancel animation frame
     return () => {
       window.removeEventListener('resize', debouncedResize);
       if (animationRef.current) {
@@ -79,6 +76,7 @@ const MatrixBackground = ({ isVisible, onLoad }) => {
     };
   }, [isVisible, onLoad]);
 
+  // Debounce function to limit the rate at which a function can fire
   const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
@@ -87,6 +85,7 @@ const MatrixBackground = ({ isVisible, onLoad }) => {
     };
   };
 
+  // Styles for the canvas
   const canvasStyle = {
     position: 'absolute',
     top: '-10%',
@@ -105,4 +104,3 @@ const MatrixBackground = ({ isVisible, onLoad }) => {
 };
 
 export default MatrixBackground;
-

@@ -4,9 +4,11 @@ import lottie from "lottie-web";
 const TronBackground = ({ startAnimation }) => {
   const canvasRef = useRef(null);
   const offscreenCanvasRef = useRef(null);
+  const parentRef = useRef(null);
   const animationStarted = useRef(false);
   const ridersInitialized = useRef(false);
   const lottieRef = useRef(null);
+  const animationFrameId = useRef(null);
 
   const restartAnimation = () => {
     animationStarted.current = false;
@@ -37,16 +39,15 @@ const TronBackground = ({ startAnimation }) => {
     let lineWidth = 24;
     let shadowBlur = 30;
 
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = canvas.width <= 768;
     if (isMobile) {
       buffer = 50;
-      lineWidth = 45;
+      lineWidth = 40;
       shadowBlur = 4;
     }
 
     let nodes = [];
     const riders = [
-
       {
         color: "bg-white",
         x: 0,
@@ -67,7 +68,6 @@ const TronBackground = ({ startAnimation }) => {
         clockwise: true,
         completed: false,
       },
-
       {
         color: "bg-accent",
         x: 0,
@@ -91,16 +91,19 @@ const TronBackground = ({ startAnimation }) => {
     ];
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      offscreenCanvas.width = canvas.width;
-      offscreenCanvas.height = canvas.height;
-      initializeNodes();
-      if (!ridersInitialized.current) {
-        initializeRiders();
-        ridersInitialized.current = true;
+      if (parentRef.current) {
+        const parent = parentRef.current;
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+        offscreenCanvas.width = canvas.width;
+        offscreenCanvas.height = canvas.height;
+        initializeNodes();
+        if (!ridersInitialized.current) {
+          initializeRiders();
+          ridersInitialized.current = true;
+        }
+        drawNodes();
       }
-      drawNodes();
     };
 
     const initializeNodes = () => {
@@ -124,11 +127,13 @@ const TronBackground = ({ startAnimation }) => {
         rider.path = [{ x: rider.x, y: rider.y }];
         rider.nodeIndex = 0;
         rider.direction = isMobile ? "down" : "right";
+        rider.completed = false;
       });
     };
 
     const drawNodes = () => {
-      offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+      const offscreenCtx = offscreenCanvasRef.current.getContext('2d');
+      offscreenCtx.clearRect(0, 0, offscreenCanvasRef.current.width, offscreenCanvasRef.current.height);
       nodes.forEach((node) => {
         offscreenCtx.fillStyle = "rgba(255, 255, 255, 0.5)";
         offscreenCtx.beginPath();
@@ -188,20 +193,44 @@ const TronBackground = ({ startAnimation }) => {
         rider.completed = true;
       }
       rider.path.push({ x: rider.x, y: rider.y });
+
+      if (rider.path.length > 1000) {
+        rider.path.shift();
+      }
     };
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(offscreenCanvas, 0, 0);
+      ctx.drawImage(offscreenCanvasRef.current, 0, 0);
       riders.forEach((rider) => {
         updateRider(rider);
         drawLine(rider.path, rider.color);
       });
-      requestAnimationFrame(animate);
+      animationFrameId.current = requestAnimationFrame(animate);
     };
 
     resizeCanvas();
     animate();
+
+
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    };
+
+    const debouncedResizeCanvas = debounce(resizeCanvas, 100);
+
+    window.addEventListener('resize', debouncedResizeCanvas);
+
+    // Cleanup function to cancel animation frame on unmount
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
   };
 
   useEffect(() => {
@@ -224,7 +253,7 @@ const TronBackground = ({ startAnimation }) => {
   }, [startAnimation]);
 
   return (
-    <div className="relative w-full h-full">
+    <div ref={parentRef} className="relative w-full h-full">
       <canvas ref={canvasRef} className="w-full h-full bg-black"></canvas>
       <button
         onClick={restartAnimation}
@@ -237,3 +266,4 @@ const TronBackground = ({ startAnimation }) => {
 };
 
 export default TronBackground;
+
