@@ -49,7 +49,7 @@ const ButtonLead = ({ extraStyle }) => {
         setIsDisabled(true);
 
         // Redirect to the thank you page
-        window.location.href = '/thank-you'; 
+        window.location.href = `/thank-you?email=${encodeURIComponent(email)}`; 
       } else {
         toast.error("Something went wrong. Please try again.");
       }

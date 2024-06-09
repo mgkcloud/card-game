@@ -9,12 +9,15 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import HeroVideo from "@/components/HeroVideo";
 import FeaturesGrid from "@/components/FeaturesGrid";
+import AnnouncementBar from "@/components/AnnouncementBar";
+
 
 export default function Home() {
 
   return (
     <>
       <Suspense>
+      <AnnouncementBar />
         <Header />
       </Suspense>
       <main>

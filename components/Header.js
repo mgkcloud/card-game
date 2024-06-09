@@ -10,7 +10,6 @@ import ButtonAccount from "@/components/ButtonAccount";
 import ButtonSignin from "@/components/ButtonSignin";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import config from "@/config";
-import AnnouncementBar from "@/components/AnnouncementBar";
 
 const links = [
   {
@@ -58,7 +57,7 @@ const Header = () => {
 
   return (
     <header className="bg-neutral">
-      <AnnouncementBar />
+    
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
@@ -74,7 +73,7 @@ const Header = () => {
             <Image
               src={logo}
               alt={`${config.appName} logo`}
-              className="w-48"
+              className="w-48 py-1"
               priority={true}
               width={32}
               height={32}

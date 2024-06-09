@@ -22,7 +22,6 @@ export default function TY() {
 
 <WithWithout  />
     
-
       </main>
       <Footer />
     </>
