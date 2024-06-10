@@ -13,7 +13,7 @@ const WithWithout = () => {
   const cardData = [
     {
       title: 'Transform your sales with AI-powered automation',
-      color: 'bg-green-500',
+      color: 'bg-primary',
       textColor: 'text-white',
       items: [
         'Qualify and engage leads 24/7',
@@ -25,7 +25,7 @@ const WithWithout = () => {
     },
     {
       title: 'Relying on outdated sales tactics?',
-      color: 'bg-red-500',
+      color: 'bg-secondary',
       textColor: 'text-white',
       items: [
         'Struggling to engage leads',
