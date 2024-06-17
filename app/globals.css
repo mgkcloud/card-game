@@ -14,9 +14,58 @@ progress::-webkit-progress-value {
 
 @layer base {
   .btn-gradient {
-    @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer disabled:!bg-none disabled:!bg-gray-500/30  !text-white;
+    @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer;
   }
+
+  .btn-gradient:disabled { 
+    @apply bg-gray-500/30 !animate-none; 
+  }
+
   .btn {
     @apply !capitalize;
+  }
+}
+
+
+/* globals.css */
+
+@layer utilities {
+  .holographic {
+    @apply bg-gradient-to-r from-slate-400 via-white to-blue-500;
+    background-size: 200% 200%;
+    animation: holographic-animation 3.5s ease infinite;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes holographic-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 0% 50%;
+    }
+
+    75% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+
+  .glitter-border {
+    @apply border-4 border-gray-300;
+    background: repeating-linear-gradient(45deg,
+        #ddd,
+        #ddd 1px,
+        transparent 1px,
+        transparent 5px),
+      linear-gradient(110deg,
+        rgba(255, 255, 255, 0.3) 5%,
+        transparent 5%);
+    background-size: 10px 10px;
   }
 }
