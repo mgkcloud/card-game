@@ -1,27 +1,12 @@
-import React, { useState } from 'react';
-import PlayingCard from './PlayingCard';
+// components/game/DealerTable.js
+import React from 'react';
+import CardDeck from './CardDeck';
 
 const DealerTable = ({ cardData }) => {
-  const [activeCardIndex, setActiveCardIndex] = useState(0); 
-
-  const handleCardSwipe = (direction) => {
-    const newIndex = activeCardIndex + (direction === 'right' ? 1 : -1);
-    setActiveCardIndex(Math.max(0, Math.min(cardData.length - 1, newIndex))); 
-  };
-
   return (
-    <div className="relative w-full h-full" style={{ height: 'calc(20vw * 1.4)', minHeight: '200px' }}>
-      {cardData.map((card, index) => (
-        <PlayingCard
-          key={index}
-          card={card}
-          index={index}
-          totalCards={cardData.length}
-          isActive={index === activeCardIndex} 
-          onSwipe={handleCardSwipe} 
-        />
-      ))}
-    </div>
+    <div className="w-full max-w-5xl mx-auto relative h-screen pt-20"> {/* Added pt-20 for top padding */}
+        <CardDeck cardData={cardData} />
+      </div>
   );
 };
 

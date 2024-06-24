@@ -24,6 +24,7 @@ module.exports = {
         shimmer: "shimmer 3s ease-out infinite alternate",
         'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
         'card-shuffle': 'shuffle 0.5s ease-in-out',
+        'jiggle': 'jiggle 0.5s ease-in-out infinite',
       },
       keyframes: {
         opacity: {
@@ -60,6 +61,10 @@ module.exports = {
           '50%': { transform: 'translateX(-15px)', zIndex: 10 },
           '75%': { transform: 'translateX(15px)', zIndex: 10 },
           '100%': { transform: 'translateX(0)', zIndex: 10 },
+        },
+        jiggle: {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1deg)' },
         },
       },
     },

@@ -1,49 +1,51 @@
-"use client"; // Add this line at the top
+"use client"
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import DealerSection from '@/components/game/DealerSection';
+import { BubbleChat } from 'flowise-embed-react';
+import apiClient from "@/libs/api";
+
+async function fetchTumblrPosts(blogIdentifier) {
+  const response = await fetch(`/api/tumblr/tumblr-posts?blogIdentifier=${encodeURIComponent(blogIdentifier)}`);
+  if (!response.ok) {
+    throw new Error(`Error fetching Tumblr posts: ${response.status}`);
+  }
+  return response.json();
+}
 
 export default function Cards() {
+  const [cardData, setCardData] = useState([]);
 
-    const cardData = [
-        {
-          title: 'Transform your sales with AI-powered automation',
+  useEffect(() => {
+    async function loadImages() {
+      const blogIdentifier = 'sabertoothwalrus.tumblr.com'; // Replace with the desired Tumblr blog
+
+      try {
+        const images = await fetchTumblrPosts(blogIdentifier);
+
+        const newCardData = images.map((image, index) => ({
+          title: `Image ${index + 1}`,
           color: 'bg-primary',
           textColor: 'text-white',
-          items: [
-            'Qualify and engage leads 24/7',
-            'Automate personalised follow-ups',
-            'Reduce response times',
-            'Integrates with your CRM',
-            'Tailored customer journeys',
-          ],
-        },
-        {
-          title: 'Relying on outdated sales tactics?',
-          color: 'bg-secondary',
-          textColor: 'text-white',
-          items: [
-            'Struggling to engage leads',
-            'Wasting time on unqualified leads',
-            'Experiencing slow response times',
-            'Lacking a centralised system for lead data',
-            'Not personalising the customer journey.',
-          ],
-        },
-      ];
+          mediaSrc: image.url,
+          items: [image.caption], // Using the post caption as an item
+        }));
 
+        setCardData(newCardData);
+      } catch (error) {
+        console.error('Error loading images:', error);
+      }
+    }
 
+    loadImages();
+  }, []);
 
   return (
     <>
-    
       <main>
-
-        <DealerSection />
-
-
+        <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" />
+        <DealerSection cardData={cardData} />
       </main>
-      
     </>
   );
 }
