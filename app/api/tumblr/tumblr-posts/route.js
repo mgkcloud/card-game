@@ -1,3 +1,4 @@
+// app/api/tumblr/tumblr-posts/route.js
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -16,21 +17,36 @@ export async function GET(request) {
     }
 
     const posts = data.response.posts.map(post => {
-      let imageUrl = null;
+      let mediaUrl = null;
+      let mediaType = null;
+
       if (post.type === 'photo' && post.photos && post.photos.length > 0) {
-        imageUrl = post.photos[0].original_size.url;
+        mediaUrl = post.photos[0].original_size.url;
+        mediaType = 'photo';
+      } else if (post.type === 'video') {
+        // Check for different video sources
+        if (post.video_url) {
+          mediaUrl = post.video_url;
+        } else if (post.player && post.player.length > 0) {
+          mediaUrl = post.player[post.player.length - 1].embed_code;
+        }
+        mediaType = 'video';
       } else if (post.type === 'text' && post.body) {
         const match = post.body.match(/<img.+?src=["'](.+?)["'].*?>/);
-        imageUrl = match ? match[1] : null;
+        if (match) {
+          mediaUrl = match[1];
+          mediaType = 'photo';
+        }
       }
 
       return {
-        type: post.type,
-        url: imageUrl,
+        type: mediaType,
+        url: mediaUrl,
         caption: post.caption || post.title || '',
         body: post.body || '',
       };
     }).filter(post => post.url !== null);
+
     return NextResponse.json(posts);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch Tumblr posts' }, { status: 500 });

@@ -1,5 +1,5 @@
 {
-  "name": "ship-fast-code",
+  "name": "card-game",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -31,6 +31,7 @@
     "next-plausible": "^3.12.0",
     "next-sitemap": "^4.2.3",
     "nextjs-toploader": "^1.6.11",
+    "node-cache": "^5.1.2",
     "nodemailer": "^6.9.13",
     "oauth-1.0a": "^2.2.6",
     "react": "18.2.0",

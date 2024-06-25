@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PlayingCard from './PlayingCard';
 
 const CardDeck = ({ cardData }) => {
-  const [activeIndex, setActiveIndex] = useState(Math.floor(cardData.length / 2));
+  const totalCards = 60; // Total cards in the circle, including dummy cards
+  const visibleCards = Math.min(cardData.length, 9); // Max number of real cards visible
+  const initialActiveIndex = Math.floor(visibleCards / 2);
+  
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const deckRef = useRef(null);
 
@@ -21,12 +25,11 @@ const CardDeck = ({ cardData }) => {
     return () => window.removeEventListener('resize', updateContainerSize);
   }, []);
 
-  const calculateCardPosition = (index, total) => {
-    const angleStep = (2 * Math.PI) / total;
-    const angle = ((index - activeIndex + total) % total) * angleStep;
-    const radius = Math.min(containerSize.width, containerSize.height) * 0.35; // Adjust as needed
+  const calculateCardPosition = (index) => {
+    const angleStep = (2 * Math.PI) / totalCards;
+    const angle = ((index - initialActiveIndex + totalCards) % totalCards) * angleStep;
+    const radius = Math.min(containerSize.width, containerSize.height) * 0.35;
     
-    // Position relative to the center (0, 0)
     const x = Math.sin(angle) * radius;
     const y = -Math.cos(angle) * radius;
     
@@ -34,8 +37,8 @@ const CardDeck = ({ cardData }) => {
       x,
       y,
       rotate: (angle * 180) / Math.PI,
-      scale: index === activeIndex ? 1.1 : 1,
-      zIndex: total - Math.abs(index - activeIndex),
+      scale: index === initialActiveIndex ? 1.1 : 1,
+      zIndex: totalCards - Math.abs(index - initialActiveIndex),
     };
   };
 
@@ -43,20 +46,32 @@ const CardDeck = ({ cardData }) => {
     const threshold = 50;
     if (Math.abs(info.offset.x) > threshold) {
       const direction = info.offset.x > 0 ? -1 : 1;
-      setActiveIndex((prev) => (prev + direction + cardData.length) % cardData.length);
+      setActiveIndex((prev) => {
+        const newIndex = (prev + direction + cardData.length) % cardData.length;
+        return Math.max(0, Math.min(newIndex, cardData.length - 1));
+      });
     }
   };
+
+  const visibleIndices = Array.from({ length: visibleCards }, (_, i) => 
+    (activeIndex - initialActiveIndex + i + cardData.length) % cardData.length
+  );
 
   return (
     <div ref={deckRef} className="relative w-full h-full overflow-visible">
       <div className="absolute inset-0 flex items-center justify-center">
         <AnimatePresence initial={false}>
-          {cardData.map((card, index) => {
-            const { x, y, rotate, scale, zIndex } = calculateCardPosition(index, cardData.length);
-            const isActive = index === activeIndex;
+          {Array.from({ length: totalCards }).map((_, index) => {
+            const visibleIndex = index % visibleCards;
+            const cardIndex = visibleIndices[visibleIndex];
+            const card = cardData[cardIndex];
+            const { x, y, rotate, scale, zIndex } = calculateCardPosition(index);
+            const isActive = cardIndex === activeIndex;
+            const isDummy = index >= visibleCards;
+
             return (
               <motion.div
-                key={card.id || index}
+                key={isDummy ? `dummy-${index}` : (card.id || cardIndex)}
                 style={{
                   position: 'absolute',
                   x,
@@ -64,14 +79,15 @@ const CardDeck = ({ cardData }) => {
                   rotate,
                   scale,
                   zIndex,
+                  opacity: isDummy ? 0 : 1, // Hide dummy cards
                 }}
                 animate={{ x, y, rotate, scale, zIndex }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                drag={isActive ? "x" : false}
+                drag={isActive && !isDummy ? "x" : false}
                 dragConstraints={{ left: -100, right: 100 }}
                 onDragEnd={handleDragEnd}
               >
-                <PlayingCard card={card} isActive={isActive} />
+                {!isDummy && <PlayingCard card={card} isActive={isActive} />}
               </motion.div>
             );
           })}

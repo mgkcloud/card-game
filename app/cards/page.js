@@ -3,48 +3,47 @@
 import React, { useState, useEffect } from 'react';
 import DealerSection from '@/components/game/DealerSection';
 import { BubbleChat } from 'flowise-embed-react';
-import apiClient from "@/libs/api";
 
-async function fetchTumblrPosts(blogIdentifier) {
-  const response = await fetch(`/api/tumblr/tumblr-posts?blogIdentifier=${encodeURIComponent(blogIdentifier)}`);
+async function fetchCards(provider, identifier) {
+  const response = await fetch(`/api/cards?provider=${provider}&identifier=${encodeURIComponent(identifier)}`);
   if (!response.ok) {
-    throw new Error(`Error fetching Tumblr posts: ${response.status}`);
+    throw new Error(`Error fetching cards: ${response.status}`);
   }
   return response.json();
 }
 
 export default function Cards() {
-  const [cardData, setCardData] = useState([]);
+  const [visibleCards, setVisibleCards] = useState([]);
+  const [deckCards, setDeckCards] = useState([]);
 
   useEffect(() => {
-    async function loadImages() {
-      const blogIdentifier = 'sabertoothwalrus.tumblr.com'; // Replace with the desired Tumblr blog
-
+    async function loadMedia() {
+      const blogIdentifier = 'sabertoothwalrus.tumblr.com';
       try {
-        const images = await fetchTumblrPosts(blogIdentifier);
-
-        const newCardData = images.map((image, index) => ({
-          title: `Image ${index + 1}`,
+        const media = await fetchCards('tumblr', blogIdentifier);
+        const allCards = media.map((item, index) => ({
+          id: index,
+          title: `Media ${index + 1}`,
           color: 'bg-primary',
           textColor: 'text-white',
-          mediaSrc: image.url,
-          items: [image.caption], // Using the post caption as an item
+          mediaSrc: item.url,
+          mediaType: item.type, // Add this line to include the media type
+          items: [item.caption],
         }));
-
-        setCardData(newCardData);
+        setVisibleCards(allCards.slice(0, 9));
+        setDeckCards(allCards.slice(9));
       } catch (error) {
-        console.error('Error loading images:', error);
+        console.error('Error loading media:', error);
       }
     }
-
-    loadImages();
+    loadMedia();
   }, []);
 
   return (
     <>
-      <main>
+      <main className='max-h-[90vh] overflow-hidden'>
         <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" />
-        <DealerSection cardData={cardData} />
+        <DealerSection cardData={visibleCards} />
       </main>
     </>
   );

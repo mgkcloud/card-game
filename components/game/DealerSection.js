@@ -10,7 +10,7 @@ const DealerSection = ({ cardData }) => {
         <h2 className="max-w-3xl mx-auto font-extrabold text-2xl md:text-4xl tracking-tight text-center mb-8">
           Make a choice: Outdated Sales or AI Automation?
         </h2>
-        <div className="w-full h-[160vh] md:h-[160vh] relative">
+        <div className="w-full h-[120vh] md:h-[160vh] relative">
           <CardDeck cardData={cardData} />
         </div>
       </div>

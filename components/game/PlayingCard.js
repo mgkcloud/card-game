@@ -2,18 +2,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const MediaContent = ({ src }) => {
+const MediaContent = ({ src, type }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [shouldContain, setShouldContain] = useState(false);
-  const imgRef = useRef(null);
-
-  const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
-  const isImage = /\.(jpeg|jpg|gif|png|gifv)$/i.test(src);
+  const mediaRef = useRef(null);
 
   useEffect(() => {
-    const checkImageFit = () => {
-      if (imgRef.current) {
-        const img = imgRef.current;
+    const checkMediaFit = () => {
+      if (mediaRef.current && type === 'photo') {
+        const img = mediaRef.current;
         const { naturalWidth, naturalHeight, clientWidth, clientHeight } = img;
         const aspectRatio = naturalWidth / naturalHeight;
         const containerAspectRatio = clientWidth / clientHeight;
@@ -26,14 +23,15 @@ const MediaContent = ({ src }) => {
       }
     };
 
-    checkImageFit();
-    window.addEventListener('resize', checkImageFit);
-    return () => window.removeEventListener('resize', checkImageFit);
-  }, []);
+    checkMediaFit();
+    window.addEventListener('resize', checkMediaFit);
+    return () => window.removeEventListener('resize', checkMediaFit);
+  }, [type]);
 
-  if (isVideo) {
+  if (type === 'video') {
     return (
       <motion.video
+        ref={mediaRef}
         className="w-full h-full object-cover"
         controls
         whileHover={{ scale: 0.8 }}
@@ -45,11 +43,11 @@ const MediaContent = ({ src }) => {
     );
   }
 
-  if (isImage) {
+  if (type === 'photo') {
     return (
       <div className="relative w-full h-full overflow-hidden">
         <motion.img
-          ref={imgRef}
+          ref={mediaRef}
           src={src}
           alt="Card media"
           className={`w-full h-full transition-all duration-300 ${isHovered && shouldContain ? 'object-contain' : 'object-cover'}`}
@@ -58,9 +56,9 @@ const MediaContent = ({ src }) => {
           onHoverEnd={() => setIsHovered(false)}
           onAnimationComplete={() => {
             if (isHovered && shouldContain) {
-              imgRef.current.style.objectFit = 'contain';
+              mediaRef.current.style.objectFit = 'contain';
             } else {
-              imgRef.current.style.objectFit = 'cover';
+              mediaRef.current.style.objectFit = 'cover';
             }
           }}
         />
@@ -85,7 +83,7 @@ const MediaContent = ({ src }) => {
 const PlayingCard = ({ card, isActive }) => {
   return (
     <motion.div
-      className={`w-40 h-60 sm:w-48 sm:h-72 rounded-lg  ${card.color} ${card.textColor}`}
+      className={`w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`}
       initial={false}
       animate={{
         boxShadow: isActive 
@@ -99,7 +97,7 @@ const PlayingCard = ({ card, isActive }) => {
       whileTap={{ scale: 0.95 }}
     >
       {card.mediaSrc ? (
-        <MediaContent src={card.mediaSrc} />
+        <MediaContent src={card.mediaSrc} type={card.mediaType} />
       ) : (
         <div className="p-3 h-full flex flex-col justify-between">
           <h3 className="text-base sm:text-lg font-bold">{card.title}</h3>
