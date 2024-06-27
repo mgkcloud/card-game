@@ -22,7 +22,8 @@ export default function Cards() {
               </button>
               {visibleCards.length > 0 ? (
                 <DealerSection 
-                  cardData={visibleCards} 
+                  handCards={visibleCards}
+                  deckCards={deckCards}
                   onMoveCardToDeck={moveCardToDeck}
                   onMoveCardToHand={moveCardToHand}
                 />

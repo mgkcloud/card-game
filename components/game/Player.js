@@ -4,6 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from 'react-hot-toast';
+import DealerSection from './DealerSection'; // Import DealerSection
+import { SessionProvider } from 'next-auth/react'; // Import SessionProvider
 
 const Player = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,6 +13,7 @@ const Player = ({ children }) => {
   const [deckCards, setDeckCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClientComponentClient();
+  const [session, setSession] = useState(null); // Add session state
 
   useEffect(() => {
     const checkUser = async () => {
@@ -21,6 +24,7 @@ const Player = ({ children }) => {
         if (session) {
           console.log("User data:", session.user);
           setUser(session.user);
+          setSession(session); // Update session state
           await loadUserCards(session.user.id);
         } else {
           await loadInitialCards();
@@ -47,9 +51,9 @@ const Player = ({ children }) => {
 
       console.log("Loaded user cards:", data);
       if (data && (data.hand || data.deck)) {
-        setVisibleCards(data.hand || []);
-        setDeckCards(data.deck || []);
-        ensureHandSize(data.hand || [], data.deck || []);
+        const { newHand, newDeck } = await ensureHandSize(data.hand || [], data.deck || []);
+        setVisibleCards(newHand);
+        setDeckCards(newDeck);
       } else {
         await loadInitialCards();
       }
@@ -71,7 +75,7 @@ const Player = ({ children }) => {
         mediaSrc: item.image_url,
         mediaType: item.type || 'photo',
         items: [item.rarity || 'common'],
-        user_id: user ? user.id : null, // Ensure user_id is set correctly
+        user_id: user ? user.id : null,
       }));
       const hand = allCards.slice(0, 9);
       const deck = allCards.slice(9);
@@ -87,14 +91,17 @@ const Player = ({ children }) => {
   };
 
   const ensureHandSize = async (hand, deck) => {
-    while (hand.length < 9 && deck.length > 0) {
-      hand.push(deck.shift());
+    const newHand = [...hand];
+    const newDeck = [...deck];
+    while (newHand.length < 9 && newDeck.length > 0) {
+      newHand.push(newDeck.shift());
     }
-    setVisibleCards(hand);
-    setDeckCards(deck);
+    setVisibleCards(newHand);
+    setDeckCards(newDeck);
     if (user) {
-      await saveUserCards(user.id, hand, deck);
+      await saveUserCards(user.id, newHand, newDeck);
     }
+    return { newHand, newDeck };
   };
 
   const saveUserCards = async (userId, hand, deck) => {
@@ -104,35 +111,52 @@ const Player = ({ children }) => {
         .upsert({ id: userId, hand, deck });
 
       if (error) throw error;
-      toast.success('Cards saved successfully');
+      console.log('Cards saved successfully');
     } catch (error) {
       console.error('Error saving user cards:', error);
       toast.error('Failed to save cards');
     }
   };
 
-  const moveCardToHand = async (card) => {
-    if (deckCards.length > 0) {
-      const updatedDeck = deckCards.filter(c => c.id !== card.id);
-      const updatedHand = [...visibleCards, card];
-      setDeckCards(updatedDeck);
-      setVisibleCards(updatedHand);
-      if (user) {
-        await saveUserCards(user.id, updatedHand, updatedDeck);
-      }
-    }
-  };
-
   const moveCardToDeck = async (card) => {
-    const updatedHand = visibleCards.filter(c => c.id !== card.id);
-    const updatedDeck = [...deckCards, card];
-    setVisibleCards(updatedHand);
-    setDeckCards(updatedDeck);
-    if (user) {
-      await saveUserCards(user.id, updatedHand, updatedDeck);
-    }
+    setVisibleCards(prev => {
+      const newHand = prev.filter(c => c.id !== card.id);
+      setDeckCards(prevDeck => {
+        const newDeck = [...prevDeck, card];
+        if (user) {
+          saveUserCards(user.id, newHand, newDeck);
+        }
+        return newDeck;
+      });
+      
+      // Ensure hand size after removing a card
+      ensureHandSize(newHand, deckCards).then(({ newHand, newDeck }) => {
+        setVisibleCards(newHand);
+        setDeckCards(newDeck);
+      });
+      
+      return newHand;
+    });
   };
 
+  const moveCardToHand = async (card) => {
+    setDeckCards(prev => {
+      const newDeck = prev.filter(c => c.id !== card.id);
+      setVisibleCards(prevHand => {
+        const newHand = [...prevHand, card];
+        
+        // Ensure hand size after adding a card
+        ensureHandSize(newHand, newDeck).then(({ newHand, newDeck }) => {
+          setVisibleCards(newHand);
+          setDeckCards(newDeck);
+        });
+        
+        return newHand;
+      });
+      
+      return newDeck;
+    });
+  };
 
   const addNewCards = async () => {
     try {
@@ -145,7 +169,7 @@ const Player = ({ children }) => {
         mediaSrc: item.image_url,
         mediaType: item.type || 'photo',
         items: [item.rarity || 'common'],
-        user_id: user ? user.id : null, // Ensure user_id is set correctly
+        user_id: user ? user.id : null,
       }));
 
       const updatedDeckCards = [...deckCards, ...formattedNewCards];
@@ -163,15 +187,37 @@ const Player = ({ children }) => {
     }
   };
 
-  return children({
-    user,
-    visibleCards,
-    deckCards,
-    moveCardToDeck,
-    moveCardToHand,
-    addNewCards,
-    isLoading,
-  });
+  // Load cards from localStorage on component mount
+  useEffect(() => {
+    const storedCards = localStorage.getItem('userCards');
+    if (storedCards) {
+      const { hand, deck } = JSON.parse(storedCards);
+      setVisibleCards(hand);
+      setDeckCards(deck);
+    }
+  }, []);
+
+  // Save cards to localStorage whenever the state changes
+  useEffect(() => {
+    localStorage.setItem('userCards', JSON.stringify({ hand: visibleCards, deck: deckCards }));
+  }, [visibleCards, deckCards]);
+
+  return (
+    <main className='max-h-[90vh] overflow-hidden'>
+      <SessionProvider session={session}> {/* Wrap DealerSection with SessionProvider */}
+        <DealerSection
+        handCards={visibleCards}
+        deckCards={deckCards}
+        onMoveCardToDeck={moveCardToDeck}
+        onMoveCardToHand={moveCardToHand}
+        isLoading={isLoading}
+        user={user}
+        addNewCards={addNewCards}
+          session={session} // Pass session prop
+      />
+      </SessionProvider>
+    </main>
+  );
 };
 
 export default Player;

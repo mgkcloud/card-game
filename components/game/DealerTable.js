@@ -1,6 +1,6 @@
 // components/game/DealerTable.js
 import React from 'react';
-import CardDeck from './CardDeck';
+import CardDeck from './CardHand';
 
 const DealerTable = ({ cardData }) => {
   return (
