@@ -1,9 +1,10 @@
 // components/game/CardDeck.js
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSwipeable } from 'react-swipeable';
 import PlayingCard from './PlayingCard';
 
-const CardDeck = ({ cardData }) => {
+const CardDeck = ({ cardData, onSwipeUp, onSwipeDown }) => {
   const totalCards = 60; // Total cards in the circle, including dummy cards
   const visibleCards = Math.min(cardData.length, 9); // Max number of real cards visible
   const initialActiveIndex = Math.floor(visibleCards / 2);
@@ -25,6 +26,12 @@ const CardDeck = ({ cardData }) => {
     return () => window.removeEventListener('resize', updateContainerSize);
   }, []);
 
+  const handlers = useSwipeable({
+    onSwipedUp: () => onSwipeUp(cardData[activeIndex]),
+    onSwipedDown: () => onSwipeDown(cardData[activeIndex]),
+    trackMouse: true
+  });
+
   const calculateCardPosition = (index) => {
     const angleStep = (2 * Math.PI) / totalCards;
     const angle = ((index - initialActiveIndex + totalCards) % totalCards) * angleStep;
@@ -43,7 +50,7 @@ const CardDeck = ({ cardData }) => {
   };
 
   const handleDragEnd = (_, info) => {
-    const threshold = 50;
+    const threshold = 20;
     if (Math.abs(info.offset.x) > threshold) {
       const direction = info.offset.x > 0 ? -1 : 1;
       setActiveIndex((prev) => {
@@ -86,6 +93,7 @@ const CardDeck = ({ cardData }) => {
                 drag={isActive && !isDummy ? "x" : false}
                 dragConstraints={{ left: -100, right: 100 }}
                 onDragEnd={handleDragEnd}
+                {...handlers}
               >
                 {!isDummy && <PlayingCard card={card} isActive={isActive} />}
               </motion.div>

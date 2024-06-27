@@ -32,7 +32,7 @@ const MediaContent = ({ src, type }) => {
     return (
       <motion.video
         ref={mediaRef}
-        className="w-full h-full object-cover"
+        className="w-full h-full rounded-lg object-cover"
         controls
         whileHover={{ scale: 0.8 }}
         transition={{ duration: 0.3 }}
@@ -45,12 +45,12 @@ const MediaContent = ({ src, type }) => {
 
   if (type === 'photo') {
     return (
-      <div className="relative w-full h-full overflow-hidden">
+      <div className="relative rounded-lg w-full h-full overflow-hidden">
         <motion.img
           ref={mediaRef}
           src={src}
           alt="Card media"
-          className={`w-full h-full transition-all duration-300 ${isHovered && shouldContain ? 'object-contain' : 'object-cover'}`}
+          className={`w-full h-full transition-all rounded-lg duration-300 ${isHovered && shouldContain ? 'object-contain' : 'object-cover'}`}
           draggable="false"
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
@@ -63,7 +63,7 @@ const MediaContent = ({ src, type }) => {
           }}
         />
         <div
-          className="absolute inset-0"
+          className="absolute rounded-lg inset-0"
           style={{
             backgroundImage: `url(${src})`,
             backgroundSize: 'cover',
@@ -99,7 +99,7 @@ const PlayingCard = ({ card, isActive }) => {
       {card.mediaSrc ? (
         <MediaContent src={card.mediaSrc} type={card.mediaType} />
       ) : (
-        <div className="p-3 h-full flex flex-col justify-between">
+        <div className="p-3 h-full rounded-lg flex flex-col justify-between">
           <h3 className="text-base sm:text-lg font-bold">{card.title}</h3>
           <ul className="list-none text-sm">
             {card.items.slice(0, 3).map((item, index) => (

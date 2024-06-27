@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import PlausibleProvider from "next-plausible";
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
+import { createClient } from '@/app/utils/supabase/server'
 import config from "@/config";
 import "./globals.css";
 
@@ -18,7 +19,11 @@ export const viewport = {
 // You can override them in each page passing params to getSOTags() function.
 export const metadata = getSEOTags();
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+
+
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       {config.domainName && (

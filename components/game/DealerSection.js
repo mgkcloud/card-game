@@ -2,7 +2,7 @@
 import React from 'react';
 import CardDeck from './CardDeck';
 
-const DealerSection = ({ cardData }) => {
+const DealerSection = ({ cardData, onMoveCardToDeck, onMoveCardToHand }) => {
   return (
     <section className="bg-neutral text-neutral-content relative min-h-screen overflow-hidden">
       <div className="relative hero-overlay bg-opacity-90"></div>
@@ -11,7 +11,8 @@ const DealerSection = ({ cardData }) => {
           Make a choice: Outdated Sales or AI Automation?
         </h2>
         <div className="w-full h-[120vh] md:h-[160vh] relative">
-          <CardDeck cardData={cardData} />
+          <CardDeck cardData={cardData} onSwipeUp={onMoveCardToHand}
+            onSwipeDown={onMoveCardToDeck} />
         </div>
       </div>
     </section>
