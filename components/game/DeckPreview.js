@@ -27,7 +27,7 @@ const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen })
         <AnimatePresence>
           {(isDeckOpen ? deckCards : deckCards.slice(0, 5)).map((card, index) => (
             <DraggableDeckCard 
-              key={card.id || `deck-card-${index}`} // Fallback to index if id is not available
+              key={card.id || `deck-card-${index}`}
               card={card} 
               onMoveCardToHand={onMoveCardToHand}
             />
@@ -40,7 +40,7 @@ const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen })
 
 const DraggableDeckCard = ({ card, onMoveCardToHand }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: card.id || `draggable-${card.title}`, // Fallback to title if id is not available
+    id: card.id || `draggable-${card.title}`,
     data: { card, isInDeck: true },
   });
 
@@ -67,5 +67,6 @@ const DraggableDeckCard = ({ card, onMoveCardToHand }) => {
     </motion.div>
   );
 };
+
 
 export default DeckPreview;

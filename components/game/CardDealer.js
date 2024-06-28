@@ -3,16 +3,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { fetchCards } from '@/app/utils/fetchCards'; // Import the utility function
-
-const CardDealer = ({ user, onCardsLoaded }) => {
-  const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com'); // Default blog name
+import TopMenu from './TopMenu';
+const CardDealer = ({ user, onCardsLoaded, onAddNewCards, onClearCards }) => {
   const supabase = createClientComponentClient();
 
-  const handleTumblrUsernameChange = (event) => {
-    setTumblrUsername(event.target.value);
-  };
+  const addNewCards = useCallback(async (tumblrUsername) => {
+    if (!tumblrUsername) {
+      toast.error('Please enter a Tumblr username');
+      return;
+    }
 
-  const addNewCards = useCallback(async () => {
     try {
       const media = await fetchCards('tumblr', tumblrUsername);
       const allCards = media.map((item, index) => ({
@@ -25,17 +25,26 @@ const CardDealer = ({ user, onCardsLoaded }) => {
         items: [item.rarity || 'common'],
         user_id: user ? user.id : null,
       }));
-      const hand = allCards.slice(0, 9);
-      const deck = allCards.slice(9);
+
+      const existingCards = JSON.parse(localStorage.getItem('userCards')) || [];
+      const newUniqueCards = allCards.filter(card => !existingCards.some(existingCard => existingCard.id === card.id));
+
+      const hand = newUniqueCards.slice(0, 9);
+      const deck = newUniqueCards.slice(9);
+
       onCardsLoaded(hand, deck);
+
       if (user) {
         await saveUserCards(user.id, hand, deck);
+      } else {
+        const updatedCards = [...existingCards, ...newUniqueCards];
+        localStorage.setItem('userCards', JSON.stringify(updatedCards));
       }
     } catch (error) {
       console.error('Error adding new cards:', error);
       toast.error('Failed to add new cards');
     }
-  }, [tumblrUsername, user, onCardsLoaded]);
+  }, [user, onCardsLoaded]);
 
   const saveUserCards = async (userId, hand, deck) => {
     try {
@@ -51,19 +60,16 @@ const CardDealer = ({ user, onCardsLoaded }) => {
     }
   };
 
+  const clearCards = useCallback(() => {
+    onCardsLoaded([], []);
+    if (user) {
+      saveUserCards(user.id, [], []);
+    }
+    localStorage.removeItem('userCards');
+  }, [user, onCardsLoaded]);
+
   return (
-    <div className="flex gap-4 flex-wrap items-center">
-      <input
-        type="text"
-        value={tumblrUsername}
-        onChange={handleTumblrUsernameChange}
-        placeholder="sabertoothwalrus.tumblr.com"
-        className="input input-bordered mr-2"
-      />
-      <button onClick={addNewCards} className="btn btn-primary">
-        Add New Cards
-      </button>
-    </div>
+    <TopMenu onAddNewCards={onAddNewCards} onClearCards={onClearCards} />
   );
 };
 

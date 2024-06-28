@@ -29,6 +29,7 @@ export default async function RootLayout({ children }) {
       {config.domainName && (
         <head>
           <PlausibleProvider domain={config.domainName} />
+          
         </head>
       )}
       <body>
