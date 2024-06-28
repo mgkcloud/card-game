@@ -1,13 +1,10 @@
-// components/game/Player.js
-"use client";
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from 'react-hot-toast';
-import DealerSection from './DealerSection';
 import { SessionProvider } from 'next-auth/react';
+import { fetchCards } from '@/app/utils/fetchCards'; // Import the utility function
 
-const Player = ({ children, tumblrUsername }) => {
+const Player = ({ children, tumblrBlogName }) => {
   const [user, setUser] = useState(null);
   const [visibleCards, setVisibleCards] = useState([]);
   const [deckCards, setDeckCards] = useState([]);
@@ -40,11 +37,12 @@ const Player = ({ children, tumblrUsername }) => {
       toast.error('Failed to load user cards');
     }
   }, [cardsLoaded]);
+
   const loadInitialCards = useCallback(async () => {
     if (cardsLoaded) return;
     try {
       console.log("Loading initial cards...");
-      const media = await fetchCards('tumblr', tumblrUsername);
+      const media = await fetchCards('tumblr', tumblrBlogName);
       console.log("Fetched initial cards:", media);
       const allCards = media.map((item, index) => ({
         id: `card-${Date.now()}-${index}`,
@@ -68,7 +66,8 @@ const Player = ({ children, tumblrUsername }) => {
       console.error('Error loading initial cards:', error);
       toast.error('Failed to load initial cards');
     }
-  }, [user, cardsLoaded, tumblrUsername]);
+  }, [user, cardsLoaded, tumblrBlogName]);
+
   useEffect(() => {
     const checkUser = async () => {
       setIsLoading(true);
@@ -107,65 +106,12 @@ const Player = ({ children, tumblrUsername }) => {
     }
   };
 
-  const moveCardToDeck = useCallback((card) => {
-    setVisibleCards(prev => {
-      const newHand = prev.filter(c => c.id !== card.id);
-      setDeckCards(prevDeck => {
-        if (prevDeck.some(c => c.id === card.id)) {
-          return prevDeck; // Card already in deck, do nothing
-        }
-        const newDeck = [...prevDeck, card];
-        if (user) {
-          saveUserCards(user.id, newHand, newDeck);
-        }
-        return newDeck;
-      });
-      return newHand;
-    });
-  }, [user]);
-
-  const moveCardToHand = useCallback((card) => {
-    setDeckCards(prev => {
-      const newDeck = prev.filter(c => c.id !== card.id);
-      setVisibleCards(prevHand => {
-        if (prevHand.some(c => c.id === card.id)) {
-          return prevHand; // Card already in hand, do nothing
-        }
-        const newHand = [...prevHand, card];
-        if (user) {
-          saveUserCards(user.id, newHand, newDeck);
-        }
-        // Ensure hand size after adding a card
-        if (newHand.length > 9) {
-          const overflowCard = newHand.shift(); // Remove the first card
-          setDeckCards(prevDeck => [...prevDeck, overflowCard]);
-        }
-        return newHand;
-      });
-      return newDeck;
-    });
-  }, [user]);
-
-  const ensureHandSize = useCallback(async (hand, deck) => {
-    const newHand = [...hand];
-    const newDeck = [...deck];
-    while (newHand.length < 9 && newDeck.length > 0) {
-      newHand.push(newDeck.shift());
-    }
-    setVisibleCards(newHand);
-    setDeckCards(newDeck);
-    if (user) {
-      await saveUserCards(user.id, newHand, newDeck);
-    }
-    return { newHand, newDeck };
-  }, [user]);
-
   const addNewCards = async () => {
     try {
       setIsLoading(true);
-      const newCards = await fetchCards('tumblr', tumblrUsername);
+      const newCards = await fetchCards('tumblr', tumblrBlogName);
       const formattedNewCards = newCards.map((item, index) => ({
-        id: `new-card-${Date.now()}-${index}`, // Add a unique id
+        id: `new-card-${Date.now()}-${index}`,
         title: `New Media ${index + 1}`,
         color: item.background_color || 'bg-primary',
         textColor: 'text-white',
@@ -188,37 +134,36 @@ const Player = ({ children, tumblrUsername }) => {
     }
   };
 
-  const memoizedDealerSection = useMemo(() => (
-    <DealerSection
-      handCards={visibleCards}
-      deckCards={deckCards}
-      onMoveCardToDeck={moveCardToDeck}
-      onMoveCardToHand={moveCardToHand}
-      isLoading={isLoading}
-      user={user}
-      addNewCards={addNewCards}
-      session={session}
-    />
-  ), [visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading, user, addNewCards, session]);
+  const handleMoveCardToDeck = useCallback((card) => {
+    setDeckCards(prevDeck => [...prevDeck, card]);
+    setVisibleCards(prevHand => prevHand.filter(c => c.id !== card.id));
+  }, []);
+
+  const handleMoveCardToHand = useCallback((card) => {
+    setVisibleCards(prevHand => {
+      if (!prevHand.some(c => c.id === card.id)) {
+        return [...prevHand, card];
+      }
+      return prevHand;
+    });
+    setDeckCards(prevDeck => prevDeck.filter(c => c.id !== card.id));
+  }, []);
 
   return (
     <main className='max-h-[90vh] overflow-hidden'>
       <SessionProvider session={session}>
-        {memoizedDealerSection}
+        {children({
+          user,
+          visibleCards,
+          deckCards,
+          moveCardToDeck: handleMoveCardToDeck,
+          moveCardToHand: handleMoveCardToHand,
+          isLoading,
+          addNewCards,
+        })}
       </SessionProvider>
     </main>
   );
 };
 
 export default Player;
-
-async function fetchCards(provider, identifier) {
-  console.log(`Fetching cards for ${provider}: ${identifier}`);
-  const response = await fetch(`/api/cards?provider=${provider}&identifier=${encodeURIComponent(identifier)}`);
-  if (!response.ok) {
-    throw new Error(`Error fetching cards: ${response.status}`);
-  }
-  const data = await response.json();
-  console.log("Fetched cards data:", data);
-  return data;
-}
