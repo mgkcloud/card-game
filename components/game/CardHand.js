@@ -11,6 +11,8 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const deckRef = useRef(null);
 
   useEffect(() => {
@@ -77,7 +79,12 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
     }
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (_, info, card) => {
+    setIsDragging(false);
     if (info.offset.y > 100) { // If dragged down more than 100px
       handleRemoveCard(card);
     } else {
@@ -86,9 +93,19 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
         const direction = info.offset.x > 0 ? -1 : 1;
         setActiveIndex((prev) => {
           const newIndex = (prev + direction + cardData.length) % cardData.length;
+          if (expandedCard) {
+            setExpandedCard(cardData[newIndex]);
+          }
           return Math.max(0, Math.min(newIndex, cardData.length - 1));
         });
       }
+    }
+  };
+
+  const handleCardClick = (card, index) => {
+    if (!isDragging) {
+      setExpandedCard(card);
+      setActiveIndex(index);
     }
   };
 
@@ -115,21 +132,30 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
                 isDummy={isDummy}
                 isActive={isActive}
                 position={{ x, y, rotate, scale, zIndex }}
+                onDragStart={handleDragStart}
                 onDragEnd={(_, info) => handleDragEnd(_, info, card)}
                 onMoveCardToDeck={onMoveCardToDeck}
                 containerRef={deckRef}
                 renderDragOverlay={renderDragOverlay}
                 isDeckOpen={isDeckOpen}
+                onClick={() => handleCardClick(card, cardIndex)}
+                isExpanded={expandedCard === card}
               />
             );
           })}
         </AnimatePresence>
       </div>
+      {expandedCard && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-40"
+          onClick={() => setExpandedCard(null)}
+        ></div>
+      )}
     </div>
   );
 };
 
-const DraggableCard = ({ card, isDummy, isActive, position, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen }) => {
+const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: card?.id || 'dummy',
     data: { card, renderDragOverlay },
@@ -142,14 +168,19 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragEnd, onMoveCar
     transition: isDragging ? 'none' : undefined,
   } : {};
 
+  const expandedStyle = isExpanded ? {
+    transform: 'scale(2)',
+    zIndex: 50,
+  } : {};
+
   return (
     <motion.div
       ref={setNodeRef}
       className={`playing-card ${isActive ? 'active' : ''}`}
       style={{
         ...style,
+        ...expandedStyle,
         position: 'absolute',
-        ...position,
         opacity: isDummy ? 0 : 1,
       }}
       animate={isDragging ? {} : position}
@@ -158,13 +189,24 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragEnd, onMoveCar
       {...listeners}
       drag={!isDummy}
       dragConstraints={containerRef}
-      onDragEnd={(_, info) => onDragEnd(_, info, card)}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       dragElastic={0.2}
+      onClick={onClick}
     >
-      {!isDummy && card && <PlayingCard card={card} isActive={isActive} />}
+      {!isDummy && card && <PlayingCard card={card} isActive={isActive} isExpanded={isExpanded} />}
+      {isExpanded && (
+        <div className="absolute top-[140%] text-white text-center">
+          <h3 className="text-lg font-bold">{card.title}</h3>
+          <ul className="list-none text-sm">
+            {card.items.map((item, index) => (
+              <li key={index} className="mb-2">{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </motion.div>
   );
 };
 
 export default CardHand;
-          

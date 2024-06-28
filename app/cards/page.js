@@ -22,18 +22,19 @@ export default function Cards() {
               </button>
               {visibleCards.length > 0 ? (
                 <DealerSection 
-                  handCards={visibleCards}
-                  deckCards={deckCards}
-                  onMoveCardToDeck={moveCardToDeck}
-                  onMoveCardToHand={moveCardToHand}
+                handCards={visibleCards}
+                deckCards={deckCards}
+                onMoveCardToDeck={moveCardToDeck}
+                onMoveCardToHand={moveCardToHand}
+                isLoading={isLoading}
+                user={user}
+                addNewCards={addNewCards}
                 />
               ) : (
                 <p>No cards available. Try refreshing the page.</p>
               )}
             </>
-          ) : (
-            <p>Please sign in to view and save your cards.</p>
-          )}
+          ) : (<br />)}
         </main>
       )}
     </Player>

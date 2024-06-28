@@ -35,20 +35,39 @@ const MediaContent = ({ src, type }) => {
   return null;
 };
 
-const PlayingCard = ({ card, isActive }) => {
+const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded }) => {
+  const baseClassName = `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`;
+  
+  const variants = {
+    normal: {
+      scale: isActive ? 1.1 : 1,
+      boxShadow: isActive 
+        ? '0 0 0 3px #00BFFF, 0 0 15px #00BFFF' 
+        : '0 3px 7px rgba(0,0,0,0.2)',
+      opacity: isActive ? 1 : 0.7,
+    },
+    dragging: {
+      scale: 0.7,
+      boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
+      opacity: 0.9,
+      rotateX: 10,
+      rotateY: -10,
+      rotateZ: 5,
+    },
+    expanded: {
+      scale: 1.5,
+      zIndex: 50,
+    }
+  };
+
   return (
     <motion.div
-      className={`w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`}
-      initial={false}
-      animate={{
-        boxShadow: isActive 
-          ? '0 0 0 3px #00BFFF, 0 0 15px #00BFFF' 
-          : '0 3px 7px rgba(0,0,0,0.2)',
-        opacity: isActive ? 1 : 0.7,
-        scale: isActive ? 1.1 : 1,
-      }}
-      transition={{ duration: 0.2 }}
-      whileHover={{ scale: isActive ? 1.15 : 1.05 }}
+      className={baseClassName}
+      initial="normal"
+      animate={isDragging ? "dragging" : isExpanded ? "expanded" : "normal"}
+      variants={variants}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      whileHover={!isExpanded && { scale: isActive ? 1.15 : 1.05 }}
       whileTap={{ scale: 0.95 }}
       draggable="false"
     >

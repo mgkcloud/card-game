@@ -1,42 +1,75 @@
 // components/game/DealerSection.js
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import CardHand from './CardHand';
 import DeckPreview from './DeckPreview';
-import { useSession } from 'next-auth/react';
+import PlayingCard from './PlayingCard';
 
-const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, isLoading, user, addNewCards, session }) => {
+const DealerSection = ({ handCards: initialHandCards, deckCards: initialDeckCards, onMoveCardToDeck, onMoveCardToHand, isLoading, user, addNewCards, session }) => {
+  const [handCards, setHandCards] = useState(initialHandCards || []);
+  const [deckCards, setDeckCards] = useState(initialDeckCards || []);
   const [draggingCard, setDraggingCard] = useState(null);
   const [isDeckOpen, setIsDeckOpen] = useState(false);
 
-  const handleDragStart = (event) => {
-    setDraggingCard(event.active.data.current);
-  };
+  useEffect(() => {
+    console.log("Initial handCards:", initialHandCards);
+    console.log("Initial deckCards:", initialDeckCards);
+    setHandCards(initialHandCards || []);
+    setDeckCards(initialDeckCards || []);
+  }, [initialHandCards, initialDeckCards]);
 
-  const handleDragEnd = (event) => {
+  const handleDragStart = useCallback((event) => {
+    setDraggingCard(event.active.data.current);
+  }, []);
+
+  const handleDragEnd = useCallback((event) => {
     if (event.over) {
-      if (event.over.id === 'deck-preview') {
-        onMoveCardToDeck(event.active.data.current.card);
-      } else if (event.over.id === 'card-hand') {
-        onMoveCardToHand(event.active.data.current.card);
+      if (event.over.id === 'card-hand') {
+        handleMoveCardToHand(event.active.data.current.card);
+      } else if (event.over.id === 'deck-preview') {
+        // Card was dragged back to the deck, do nothing
       }
     }
     setDraggingCard(null);
-  };
+  }, []);
 
-  const renderDragOverlay = (card) => {
-    return (
-      <div style={{ transform: 'scale(1.05)', zIndex: 9999 }}>
-        {/* This div will be styled to look like a card without using PlayingCard component */}
-        <div className="w-40 h-60 sm:w-48 sm:h-72 rounded-lg bg-primary text-white p-3">
-          <h3 className="text-base sm:text-lg font-bold">{card.title}</h3>
-          {card.mediaSrc && (
-            <img src={card.mediaSrc} alt={card.title} className="w-full h-3/4 object-cover rounded-lg mt-2" />
-          )}
-        </div>
-      </div>
-    );
-  };
+  const handleMoveCardToHand = useCallback((card) => {
+    setHandCards(prevHand => {
+      if (!prevHand.some(c => c.id === card.id)) {
+        return [...prevHand, card];
+      }
+      return prevHand;
+    });
+    setDeckCards(prevDeck => prevDeck.filter(c => c.id !== card.id));
+    onMoveCardToHand(card);
+  }, [onMoveCardToHand]);
+
+  const handleMoveCardToDeck = useCallback((card) => {
+    setDeckCards(prevDeck => [...prevDeck, card]);
+    setHandCards(prevHand => prevHand.filter(c => c.id !== card.id));
+    onMoveCardToDeck(card);
+  }, [onMoveCardToDeck]);
+
+  const memoizedCardHand = useMemo(() => (
+    <CardHand
+      cardData={handCards}
+      onSwipeDown={handleMoveCardToDeck}
+      onMoveCardToDeck={handleMoveCardToDeck}
+      isDeckOpen={isDeckOpen}
+    />
+  ), [handCards, handleMoveCardToDeck, isDeckOpen]);
+
+  const memoizedDeckPreview = useMemo(() => (
+    <DeckPreview
+      deckCards={deckCards}
+      onMoveCardToHand={handleMoveCardToHand}
+      isDeckOpen={isDeckOpen}
+      setIsDeckOpen={setIsDeckOpen}
+    />
+  ), [deckCards, handleMoveCardToHand, isDeckOpen]);
+
+  console.log("Rendering DealerSection with handCards:", handCards);
+  console.log("Rendering DealerSection with deckCards:", deckCards);
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -53,34 +86,29 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
                   </button>
                 </div>
               )}
-              {!session && (
-                <p>Please sign in to view and save your cards.</p>
-              )}
+              {!session && <br />}
             </div>
           </header>
-          <div className="w-full h-[120vh] md:h-[160vh] relative">
-            <CardHand 
-              cardData={handCards} 
-              onSwipeDown={onMoveCardToDeck}
-              onMoveCardToDeck={onMoveCardToDeck}
-              renderDragOverlay={renderDragOverlay}
-              isDeckOpen={isDeckOpen}
-            />
+          <div className="w-full h-[100vh] md:h-[140vh] relative">
+            {memoizedCardHand}
           </div>
         </div>
-        <DeckPreview 
-          deckCards={deckCards}
-          onMoveCardToHand={onMoveCardToHand}
-          renderDragOverlay={renderDragOverlay}
-          isDeckOpen={isDeckOpen}
-          setIsDeckOpen={setIsDeckOpen}
-        />
+        {memoizedDeckPreview}
         <DragOverlay>
-          {draggingCard && draggingCard.renderDragOverlay(draggingCard.card)}
+          {draggingCard && (
+            <div style={{ zIndex: 9999 }}>
+              <PlayingCard
+                card={draggingCard.card}
+                isActive={false}
+                isDragging={true}
+                isInDeck={draggingCard.isInDeck}
+              />
+            </div>
+          )}
         </DragOverlay>
       </section>
     </DndContext>
   );
 };
 
-export default DealerSection;
+export default React.memo(DealerSection);

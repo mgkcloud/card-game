@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import NodeCache from 'node-cache';
 
 const cache = new NodeCache({ stdTTL: 600 });
+// app/api/cards/route.js
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -15,19 +16,19 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Provider and identifier are required' }, { status: 400 });
   }
 
-    const supabase = createRouteHandlerClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies });
 
-    // Get the user's session
-    const { data: { session } } = await supabase.auth.getSession();
+  // Get the user's session
+  const { data: { session } } = await supabase.auth.getSession();
   const userId = session?.user?.id;
 
   // Use a different cache key for authenticated and unauthenticated requests
   const cacheKey = `cards_${provider}_${identifier}_${userId || 'anon'}`;
-    const cachedData = cache.get(cacheKey);
+  const cachedData = cache.get(cacheKey);
 
-    if (cachedData) {
-      return NextResponse.json(cachedData);
-    }
+  if (cachedData) {
+    return NextResponse.json(cachedData);
+  }
 
   try {
     let url;
@@ -57,9 +58,11 @@ export async function GET(req) {
       // Store the transformed data in Supabase only for authenticated users
       const { error } = await supabase.from("cards").upsert(transformedData);
       if (error) {
-      console.error('Error storing cards in Supabase:', error);
+        console.error('Error storing cards in Supabase:', error);
+      }
     }
-    }
+    
+    // For both authenticated and unauthenticated users, cache and return the transformed data
     cache.set(cacheKey, transformedData);
     return NextResponse.json(transformedData);
   } catch (error) {
@@ -67,6 +70,7 @@ export async function GET(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 
 function getRandomColor() {
   const colors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500'];
