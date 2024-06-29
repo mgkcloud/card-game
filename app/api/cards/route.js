@@ -11,6 +11,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const provider = searchParams.get('provider');
   const identifier = searchParams.get('identifier');
+  const tag = searchParams.get('identifier') || null;
 
   if (!provider || !identifier) {
     return NextResponse.json({ error: 'Provider and identifier are required' }, { status: 400 });
@@ -35,6 +36,9 @@ export async function GET(req) {
     switch (provider) {
       case 'tumblr':
         url = `/api/tumblr/tumblr-posts?blogIdentifier=${encodeURIComponent(identifier)}`;
+        break;
+      case 'piwigo':
+        url = `/api/piwigo/tags?url=${encodeURIComponent(identifier)}&tag=${encodeURIComponent(tag)}`;
         break;
       default:
         throw new Error('Unsupported provider');
@@ -61,7 +65,7 @@ export async function GET(req) {
         console.error('Error storing cards in Supabase:', error);
       }
     }
-    
+
     // For both authenticated and unauthenticated users, cache and return the transformed data
     cache.set(cacheKey, transformedData);
     return NextResponse.json(transformedData);

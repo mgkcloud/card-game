@@ -8,18 +8,22 @@ import { BubbleChat } from 'flowise-embed-react';
 
 export default function Cards() {
   return (
-    <main className='max-h-[90vh] overflow-hidden bg-neutral text-neutral-content'>
+    <main className='max-h-[100vh] overflow-hidden bg-neutral text-neutral-content'>
       <Player>
-        {({ user, visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading }) => (
+        {({ user, visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading, onAddNewCards, onClearCards, setVisibleCards, setDeckCards }) => (
           <>
             <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" />
-            <DealerSection 
+            <DealerSection
               handCards={visibleCards}
               deckCards={deckCards}
               onMoveCardToDeck={moveCardToDeck}
               onMoveCardToHand={moveCardToHand}
               isLoading={isLoading}
               user={user}
+              onAddNewCards={onAddNewCards}
+              onClearCards={onClearCards}
+              setVisibleCards={setVisibleCards}
+              setDeckCards={setDeckCards}
             />
           </>
         )}

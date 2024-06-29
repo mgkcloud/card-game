@@ -5,7 +5,7 @@ import DeckPreview from './DeckPreview';
 import PlayingCard from './PlayingCard';
 import CardDealer from './CardDealer';
 
-const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards }) => {
+const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards, setVisibleCards, setDeckCards }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
 
   const handleCardsLoaded = useCallback((hand, deck) => {
@@ -15,6 +15,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
 
   const memoizedCardHand = useMemo(() => (
     <CardHand
+    className="mt-auto"
       cardData={handCards}
       onSwipeDown={onMoveCardToDeck}
       onMoveCardToDeck={onMoveCardToDeck}
@@ -33,7 +34,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
 
   return (
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <section className="bg-neutral text-neutral-content relative min-h-screen overflow-hidden">
+      <section className="bg-neutral text-neutral-content relative min-h-screen overflow-visible" style={{ userSelect: 'none' }}>
         <div className="relative hero-overlay bg-opacity-90"></div>
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center h-full">
           <header className="bg-neutral text-neutral-content w-full px-4 py-2 mb-4 rounded-lg">
@@ -44,7 +45,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
                 </div>
               )}
               <div className="flex gap-4 flex-wrap items-center">
-                <CardDealer user={user} onCardsLoaded={handleCardsLoaded} onAddNewCards={onAddNewCards} onClearCards={onClearCards} />
+                <CardDealer user={user} onCardsLoaded={handleCardsLoaded} onAddNewCards={onAddNewCards} onClearCards={onClearCards} setVisibleCards={setVisibleCards} setDeckCards={setDeckCards} />
               </div>
             </div>
           </header>

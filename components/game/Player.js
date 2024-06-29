@@ -136,7 +136,7 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
   }, []);
 
   return (
-    <main className='max-h-[90vh] overflow-hidden'>
+    <main className='max-h-[100vh] overflow-hidden'>
       {children({
         user,
         visibleCards,
@@ -146,6 +146,8 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
         isLoading,
         onAddNewCards: handleAddNewCards,
         onClearCards: handleClearCards,
+        setVisibleCards: setVisibleCards,
+        setDeckCards: setDeckCards,
       })}
     </main>
   );

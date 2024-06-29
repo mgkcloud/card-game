@@ -55,7 +55,7 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded }) => {
       rotateZ: 5,
     },
     expanded: {
-      scale: 1.5,
+      scale: 0.7,
       zIndex: 50,
     }
   };
@@ -67,7 +67,7 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded }) => {
       animate={isDragging ? "dragging" : isExpanded ? "expanded" : "normal"}
       variants={variants}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      whileHover={!isExpanded && { scale: isActive ? 1.15 : 1.05 }}
+      whileHover={!isExpanded ? { scale: isActive ? 1.15 : 1.05 } : { scale: isActive ? 0.7 : 0.7 }}
       whileTap={{ scale: 0.95 }}
       draggable="false"
     >
@@ -78,6 +78,16 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded }) => {
           <h3 className="text-base sm:text-lg font-bold">{card.title}</h3>
           <ul className="list-none text-sm">
             {card.items.slice(0, 3).map((item, index) => (
+              <li key={index} className="mb-2">{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {isExpanded && (
+        <div className="absolute top-full left-0 right-0 text-white text-center mt-4">
+          <h3 className="text-lg font-bold">{card.title}</h3>
+          <ul className="list-none text-sm">
+            {card.items.map((item, index) => (
               <li key={index} className="mb-2">{item}</li>
             ))}
           </ul>

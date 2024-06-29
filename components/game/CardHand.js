@@ -8,11 +8,12 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   const totalCards = 60;
   const visibleCards = Math.min(cardData.length, 9);
   const initialActiveIndex = Math.floor(visibleCards / 2);
-  
+
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [expandedCard, setExpandedCard] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [previousActiveIndex, setPreviousActiveIndex] = useState(null);
   const deckRef = useRef(null);
 
   useEffect(() => {
@@ -52,10 +53,10 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
     const angleStep = (2 * Math.PI) / totalCards;
     const angle = ((index - initialActiveIndex + totalCards) % totalCards) * angleStep;
     const radius = Math.min(containerSize.width, containerSize.height) * 0.35;
-    
+
     const x = Math.sin(angle) * radius;
     const y = -Math.cos(angle) * radius;
-    
+
     return {
       x,
       y,
@@ -85,7 +86,7 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
 
   const handleDragEnd = (_, info, card) => {
     setIsDragging(false);
-    if (info.offset.y > 100) { // If dragged down more than 100px
+    if (info.offset.y > 85) { // If dragged down more than 100px
       handleRemoveCard(card);
     } else {
       const threshold = 20;
@@ -104,12 +105,19 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
 
   const handleCardClick = (card, index) => {
     if (!isDragging) {
-      setExpandedCard(card);
-      setActiveIndex(index);
+      if (expandedCard) {
+        // If we're closing the modal
+        setExpandedCard(null);
+        // Don't change the active index when closing the modal
+      } else {
+        // If we're opening the modal
+        setExpandedCard(card);
+        setActiveIndex(index);
+      }
     }
   };
 
-  const visibleIndices = Array.from({ length: visibleCards }, (_, i) => 
+  const visibleIndices = Array.from({ length: visibleCards }, (_, i) =>
     (activeIndex - initialActiveIndex + i + cardData.length) % cardData.length
   );
 
@@ -131,7 +139,7 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
                 card={card}
                 isDummy={isDummy}
                 isActive={isActive}
-                position={{ x, y, rotate, scale, zIndex }}
+                position={{ x, y, rotate, scale, zIndex: expandedCard ? (isActive ? totalCards + 1 : zIndex) : zIndex }}
                 onDragStart={handleDragStart}
                 onDragEnd={(_, info) => handleDragEnd(_, info, card)}
                 onMoveCardToDeck={onMoveCardToDeck}
@@ -147,31 +155,69 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
       </div>
       {expandedCard && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-75 z-40"
-          onClick={() => setExpandedCard(null)}
+          className="fixed inset-0 bg-black bg-opacity-75"
+          style={{ zIndex: 9999 }}
+          onClick={() => handleCardClick(null, null)}
         ></div>
       )}
     </div>
   );
 };
 
-const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded }) => {
+const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded, setIsExpanded }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: card?.id || 'dummy',
     data: { card, renderDragOverlay },
     disabled: !isDeckOpen, // Disable dragging if the deck is not open
   });
 
+
+  const baseZIndex = 100;
+  const activeZIndex = 200;
+  const draggingZIndex = 10000;
+  const expandedZIndex = 20000;
+
+  const cardZIndex = isActive ? activeZIndex : baseZIndex + position.zIndex;
+
+  // Calculate the scale based on viewport size
+  const calculateScale = () => {
+
+    if (typeof window === 'undefined') {
+      return 1; // Default scale for server-side rendering
+    }
+
+
+    if (typeof window != 'undefined') {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const maxWidth = viewportWidth * 0.8;
+      const maxHeight = viewportHeight * 0.8;
+      const scaleX = maxWidth / 192; // 48rem = 192px (3 * 16px per rem)
+      const scaleY = maxHeight / 288; // 72rem = 288px
+      return Math.min(scaleX, scaleY, 2); // Cap the scale at 2x for larger screens
+    }
+
+
+  };
+
+  const expandedScale = calculateScale();
+
   const style = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: isDragging ? 9999 : position.zIndex,
+    zIndex: isDragging ? draggingZIndex : (isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex)),
     transition: isDragging ? 'none' : undefined,
   } : {};
 
   const expandedStyle = isExpanded ? {
-    transform: 'scale(2)',
-    zIndex: 50,
+    transform: `scale(${expandedScale})`,
+    zIndex: expandedZIndex,
   } : {};
+
+  const handleHold = () => {
+    if (isActive) {
+      setIsExpanded(true);
+    }
+  };
 
   return (
     <motion.div
@@ -183,7 +229,11 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
         position: 'absolute',
         opacity: isDummy ? 0 : 1,
       }}
-      animate={isDragging ? {} : position}
+      animate={isDragging ? {} : {
+        ...position,
+        scale: isExpanded ? expandedScale : position.scale,
+        zIndex: isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex),
+      }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       {...attributes}
       {...listeners}
@@ -193,20 +243,13 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
       onDragEnd={onDragEnd}
       dragElastic={0.2}
       onClick={onClick}
+
     >
-      {!isDummy && card && <PlayingCard card={card} isActive={isActive} isExpanded={isExpanded} />}
-      {isExpanded && (
-        <div className="absolute top-[140%] text-white text-center">
-          <h3 className="text-lg font-bold">{card.title}</h3>
-          <ul className="list-none text-sm">
-            {card.items.map((item, index) => (
-              <li key={index} className="mb-2">{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {!isDummy && card && <PlayingCard card={card} isActive={isActive} isExpanded={isExpanded} isDragging={isDragging} />}
+
     </motion.div>
   );
 };
+
 
 export default CardHand;
