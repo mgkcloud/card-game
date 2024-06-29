@@ -11,7 +11,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const provider = searchParams.get('provider');
   const identifier = searchParams.get('identifier');
-  const tag = searchParams.get('identifier') || null;
+  const tag = searchParams.get('tag') || null;
 
   if (!provider || !identifier) {
     return NextResponse.json({ error: 'Provider and identifier are required' }, { status: 400 });
@@ -50,6 +50,8 @@ export async function GET(req) {
     }
 
     const data = await response.json();
+
+    // console.log(data)
 
     const transformedData = data.map((item, index) => ({
       image_url: item.url,

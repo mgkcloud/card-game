@@ -8,7 +8,7 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards  }) => {
   const supabase = createClientComponentClient();
   const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
   const [tag, setTag] = useState('');
-  const [caseSelector, setCaseSelector] = useState('tumblr');
+  const [caseSelector, setCaseSelector] = useState('');
 
   const handleAddNewCards = useCallback(async () => {
     try {
@@ -34,7 +34,7 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards  }) => {
       console.error('Error adding new cards:', error);
       toast.error('Failed to add new cards');
     }
-  }, [user, tumblrUsername, setVisibleCards, setDeckCards]);
+  }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
 
   const handleClearCards = useCallback(() => {
     setVisibleCards([]);

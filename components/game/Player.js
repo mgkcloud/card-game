@@ -63,9 +63,9 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
   }, [cardsLoaded]);
 
 
-  const handleAddNewCards = useCallback(async (tumblrUsername) => {
+  const handleAddNewCards = useCallback(async (tumblrUsername, caseSelector) => {
     try {
-      const media = await fetchCards('tumblr', tumblrUsername);
+      const media = await fetchCards(caseSelector || 'tumblr', tumblrUsername);
       const allCards = media.map((item, index) => ({
         id: `card-${Date.now()}-${index}`,
         title: `Media ${index + 1}`,
