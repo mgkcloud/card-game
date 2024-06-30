@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import cheerio from 'cheerio';
 
-const ZENROWS_KEY = process.env.ZENROWS_KEY;
 const IMAGES_PER_ALBUM = 3;
 const MAX_ALBUMS = 10;
 
@@ -33,6 +31,22 @@ async function piwigoCategoriesCall(url, method, params = {}) {
   }
 }
 
+// Helper function to retry API calls
+async function retryApiCall(apiCall, url, method, params, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await apiCall(url, method, params);
+    } catch (error) {
+      if (i === retries - 1) {
+        console.error(`Failed after ${retries} retries:`, error);
+        throw error;
+      }
+      console.warn(`Retry ${i + 1} failed:`, error);
+    }
+  }
+}
+
+// Update getLatestAlbums to use the retry function
 async function getLatestAlbums(url, tag) {
   const params = {
     order: 'date_last',
@@ -40,36 +54,25 @@ async function getLatestAlbums(url, tag) {
   };
 
   if (tag) {
-    params.cat_id = tag; // Include the tag as a category ID if provided
+    params.cat_id = tag;
   }
 
-  const data = await piwigoCategoriesCall(url, 'pwg.categories.getList', params);
-
-  // Check if data and data.result are defined
-  if (!data || !data.result) {
-    console.error('Invalid response from Piwigo API:', data);
-    throw new Error('Invalid response from Piwigo API');
-  }
-
-  // Check if data.result.categories is defined
-  if (!data.result.categories) {
-    console.error('No categories found in the response:', data.result);
-    throw new Error('No categories found in the response');
-  }
-
+  const data = await retryApiCall(piwigoCategoriesCall, url, 'pwg.categories.getList', params);
   return data.result.categories;
 }
 
+// Update getImagesFromAlbum to use the retry function
 async function getImagesFromAlbum(url, albumId) {
-  const data = await piwigoCategoriesCall(url, 'pwg.categories.getImages', {
+  const data = await retryApiCall(piwigoCategoriesCall, url, 'pwg.categories.getImages', {
     cat_id: albumId,
-    order: 'date_creation',
+    order: 'random',
     limit: IMAGES_PER_ALBUM.toString(),
   });
 
   return data.result.images;
 }
 
+// Update the GET function to handle errors from the retry function
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
@@ -92,7 +95,6 @@ export async function GET(request) {
       })));
     }
 
-    // Format the response
     const formattedImages = allImages.map(image => ({
       type: 'photo',
       url: image.element_url,
