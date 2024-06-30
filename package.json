@@ -46,6 +46,7 @@
     "react-calendly": "^4.3.1",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1",
+    "react-lazy-load-image-component": "^1.6.2",
     "react-swipeable": "^7.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-tooltip": "^5.26.3",

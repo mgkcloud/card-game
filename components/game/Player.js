@@ -94,8 +94,17 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
     if (user) {
       saveUserCards(user.id, [], []);
     }
-    localStorage.removeItem('userCards');
+    // localStorage.removeItem('userCards');
   }, [user]);
+
+
+  const handleClearHand = useCallback(() => {
+    setVisibleCards([]);
+
+  }, [user]);
+
+
+  
 
   useEffect(() => {
     const checkUser = async () => {
@@ -148,6 +157,7 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
         onClearCards: handleClearCards,
         setVisibleCards: setVisibleCards,
         setDeckCards: setDeckCards,
+        onClearHand: handleClearHand
       })}
     </main>
   );

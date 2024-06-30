@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-const TopMenu = ({ onAddNewCards, onClearCards, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector }) => {
+const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
       className="fixed top-0 left-0 w-full bg-gray-800"
       style={{ zIndex: isOpen ? 20000 : 200 }}
-      animate={{ height: isOpen ? '40vh' : '20px' }}
+      animate={{ height: isOpen ? '50vh' : '20px' }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
       <div className="pb-4 flex flex-col items-center justify-center h-full">
@@ -40,8 +40,11 @@ const TopMenu = ({ onAddNewCards, onClearCards, tumblrUsername, setTumblrUsernam
             <button onClick={onAddNewCards} className="btn btn-primary mb-2">
               Add New Cards
             </button>
-            <button onClick={onClearCards} className="btn btn-secondary">
+            <button onClick={onClearCards} className="btn btn-secondary mb-2">
               Clear Cards
+            </button>
+            <button onClick={onClearHand} className="btn btn-secondary">
+              Clear Hand
             </button>
           </>
         )}

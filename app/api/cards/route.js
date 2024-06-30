@@ -23,8 +23,11 @@ export async function GET(req) {
   const { data: { session } } = await supabase.auth.getSession();
   const userId = session?.user?.id;
 
-  // Use a different cache key for authenticated and unauthenticated requests
-  const cacheKey = `cards_${provider}_${identifier}_${userId || 'anon'}`;
+  // app/api/cards/route.js
+
+  // Update the cache key to include the tag
+  const cacheKey = `cards_${provider}_${identifier}_${tag}_${userId || 'anon'}`;
+
   const cachedData = cache.get(cacheKey);
 
   if (cachedData) {

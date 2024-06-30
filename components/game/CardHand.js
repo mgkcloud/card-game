@@ -1,8 +1,7 @@
 // components/game/CardHand.js
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDraggable } from '@dnd-kit/core';
-import PlayingCard from './PlayingCard';
+import DraggableCard from './DraggableCard';
 
 const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDragOverlay, isDeckOpen }) => {
   const totalCards = 60;
@@ -13,7 +12,6 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [expandedCard, setExpandedCard] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [previousActiveIndex, setPreviousActiveIndex] = useState(null);
   const deckRef = useRef(null);
 
   useEffect(() => {
@@ -30,7 +28,6 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   }, []);
 
   useEffect(() => {
-    // Adjust activeIndex if it's out of bounds after cardData changes
     if (activeIndex >= cardData.length) {
       setActiveIndex(Math.max(0, cardData.length - 1));
     }
@@ -86,7 +83,7 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
 
   const handleDragEnd = (_, info, card) => {
     setIsDragging(false);
-    if (info.offset.y > 85) { // If dragged down more than 100px
+    if (info.offset.y > 85) {
       handleRemoveCard(card);
     } else {
       const threshold = 20;
@@ -106,11 +103,8 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   const handleCardClick = (card, index) => {
     if (!isDragging) {
       if (expandedCard) {
-        // If we're closing the modal
         setExpandedCard(null);
-        // Don't change the active index when closing the modal
       } else {
-        // If we're opening the modal
         setExpandedCard(card);
         setActiveIndex(index);
       }
@@ -163,93 +157,5 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
     </div>
   );
 };
-
-const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded, setIsExpanded }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: card?.id || 'dummy',
-    data: { card, renderDragOverlay },
-    disabled: !isDeckOpen, // Disable dragging if the deck is not open
-  });
-
-
-  const baseZIndex = 100;
-  const activeZIndex = 200;
-  const draggingZIndex = 10000;
-  const expandedZIndex = 20000;
-
-  const cardZIndex = isActive ? activeZIndex : baseZIndex + position.zIndex;
-
-  // Calculate the scale based on viewport size
-  const calculateScale = () => {
-
-    if (typeof window === 'undefined') {
-      return 1; // Default scale for server-side rendering
-    }
-
-
-    if (typeof window != 'undefined') {
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const maxWidth = viewportWidth * 0.8;
-      const maxHeight = viewportHeight * 0.8;
-      const scaleX = maxWidth / 192; // 48rem = 192px (3 * 16px per rem)
-      const scaleY = maxHeight / 288; // 72rem = 288px
-      return Math.min(scaleX, scaleY, 2); // Cap the scale at 2x for larger screens
-    }
-
-
-  };
-
-  const expandedScale = calculateScale();
-
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: isDragging ? draggingZIndex : (isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex)),
-    transition: isDragging ? 'none' : undefined,
-  } : {};
-
-  const expandedStyle = isExpanded ? {
-    transform: `scale(${expandedScale})`,
-    zIndex: expandedZIndex,
-  } : {};
-
-  const handleHold = () => {
-    if (isActive) {
-      setIsExpanded(true);
-    }
-  };
-
-  return (
-    <motion.div
-      ref={setNodeRef}
-      className={`playing-card ${isActive ? 'active' : ''}`}
-      style={{
-        ...style,
-        ...expandedStyle,
-        position: 'absolute',
-        opacity: isDummy ? 0 : 1,
-      }}
-      animate={isDragging ? {} : {
-        ...position,
-        scale: isExpanded ? expandedScale : position.scale,
-        zIndex: isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex),
-      }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      {...attributes}
-      {...listeners}
-      drag={!isDummy}
-      dragConstraints={containerRef}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      dragElastic={0.2}
-      onClick={onClick}
-
-    >
-      {!isDummy && card && <PlayingCard card={card} isActive={isActive} isExpanded={isExpanded} isDragging={isDragging} />}
-
-    </motion.div>
-  );
-};
-
 
 export default CardHand;

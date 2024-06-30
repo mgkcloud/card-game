@@ -4,7 +4,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { fetchCards } from '@/app/utils/fetchCards';
 import TopMenu from './TopMenu';
 
-const CardDealer = ({ user, setVisibleCards, setDeckCards  }) => {
+const CardDealer = ({ user, setVisibleCards, setDeckCards, onClearHand  }) => {
   const supabase = createClientComponentClient();
   const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
   const [tag, setTag] = useState('');
@@ -59,6 +59,7 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards  }) => {
       setCaseSelector={setCaseSelector}
       setVisibleCards={setVisibleCards}
       setDeckCards={setDeckCards} 
+      onClearHand={onClearHand}
     />
   );
 };

@@ -5,7 +5,7 @@ import DeckPreview from './DeckPreview';
 import PlayingCard from './PlayingCard';
 import CardDealer from './CardDealer';
 
-const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards, setVisibleCards, setDeckCards }) => {
+const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
 
   const handleCardsLoaded = useCallback((hand, deck) => {
@@ -45,7 +45,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
                 </div>
               )}
               <div className="flex gap-4 flex-wrap items-center">
-                <CardDealer user={user} onCardsLoaded={handleCardsLoaded} onAddNewCards={onAddNewCards} onClearCards={onClearCards} setVisibleCards={setVisibleCards} setDeckCards={setDeckCards} />
+                <CardDealer user={user} onCardsLoaded={handleCardsLoaded} onAddNewCards={onAddNewCards} onClearCards={onClearCards} onClearHand={onClearHand} setVisibleCards={setVisibleCards} setDeckCards={setDeckCards} />
               </div>
             </div>
           </header>
