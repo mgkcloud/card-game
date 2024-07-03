@@ -79,9 +79,9 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
       const deck = allCards.slice(9);
       setVisibleCards(prev => [...prev, ...hand]);
       setDeckCards(prev => [...prev, ...deck]);
-      if (user) {
-        await saveUserCards(user.id, [...visibleCards, ...hand], [...deckCards, ...deck]);
-      }
+      // if (user) {
+      //   await saveUserCards(user.id, [...visibleCards, ...hand], [...deckCards, ...deck]);
+      // }
     } catch (error) {
       console.error('Error adding new cards:', error);
       toast.error('Failed to add new cards');
@@ -91,9 +91,9 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
   const handleClearCards = useCallback(() => {
     setVisibleCards([]);
     setDeckCards([]);
-    if (user) {
-      saveUserCards(user.id, [], []);
-    }
+    // if (user) {
+    //   saveUserCards(user.id, [], []);
+    // }
     // localStorage.removeItem('userCards');
   }, [user]);
 
