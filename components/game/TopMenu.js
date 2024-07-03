@@ -20,6 +20,7 @@ const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, set
               onChange={(e) => setTumblrUsername(e.target.value)}
               placeholder="sabertoothwalrus.tumblr.com"
               className="input input-bordered mr-2 mb-2"
+              style={{ fontSize: '22px' }}
             />
             <input
               type="text"
@@ -27,11 +28,13 @@ const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, set
               onChange={(e) => setTag(e.target.value)}
               placeholder="Tag (if applicable)"
               className="input input-bordered mr-2 mb-2"
+              style={{ fontSize: '22px' }}
             />
             <select
               value={caseSelector}
               onChange={(e) => setCaseSelector(e.target.value)}
               className="input input-bordered mr-2 mb-2"
+              style={{ fontSize: '22px' }}
             >
               <option value="tumblr">Default (Tumblr)</option>
               <option value="piwigo">Piwigo</option>
