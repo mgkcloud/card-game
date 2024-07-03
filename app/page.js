@@ -7,18 +7,7 @@ import DealerSection from '@/components/game/DealerSection';
 // import { BubbleChat } from 'flowise-embed-react';
 
 export default function Cards() {
-  // Disable context menu on long press
-  React.useEffect(() => {
-    const disableContextMenu = (event) => {
-      event.preventDefault();
-    };
 
-    document.addEventListener('contextmenu', disableContextMenu);
-
-    return () => {
-      document.removeEventListener('contextmenu', disableContextMenu);
-    };
-  }, []);
 
   return (
     <main className='w-[100vw] overflow-hidden bg-neutral text-neutral-content' style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
