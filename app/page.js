@@ -1,37 +1,35 @@
-"use client"; // Add this line at the top
+// app/cards/page.js
+"use client";
 
-import React, { useState, Suspense } from 'react';
-import Header from "@/components/Header";
-import Problem from "@/components/Problem";
-import Pricing from "@/components/Pricing";
-import FAQ from "@/components/FAQ";
-import CTA from "@/components/CTA";
-import Footer from "@/components/Footer";
-import HeroVideo from "@/components/HeroVideo";
-import FeaturesGrid from "@/components/FeaturesGrid";
-import AnnouncementBar from "@/components/AnnouncementBar";
+import React from 'react';
+import Player from '@/components/game/Player';
+import DealerSection from '@/components/game/DealerSection';
+import { BubbleChat } from 'flowise-embed-react';
 
-
-export default function Home() {
-
+export default function Cards() {
   return (
-    <>
-      <Suspense>
-      <AnnouncementBar />
-        <Header />
-      </Suspense>
-      <main>
-        <HeroVideo />
-
-        <Problem />
-
-        <FeaturesGrid />
-
-        <Pricing />
-        <CTA />
-
-      </main>
-      <Footer />
-    </>
+    <main className='max-h-[100%] overflow-hidden bg-neutral text-neutral-content'>
+      <Player>
+        {({ user, visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand }) => (
+          <>
+            <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" />
+            <DealerSection
+            className='max-h-[100%]'
+              handCards={visibleCards}
+              deckCards={deckCards}
+              onMoveCardToDeck={moveCardToDeck}
+              onMoveCardToHand={moveCardToHand}
+              isLoading={isLoading}
+              user={user}
+              onAddNewCards={onAddNewCards}
+              onClearCards={onClearCards}
+              setVisibleCards={setVisibleCards}
+              setDeckCards={setDeckCards}
+              onClearHand={onClearHand}
+            />
+          </>
+        )}
+      </Player>
+    </main>
   );
 }
