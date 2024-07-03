@@ -74,6 +74,7 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
         }
         return prevIndex;
       });
+      setExpandedCard(null);
     }
   };
 
