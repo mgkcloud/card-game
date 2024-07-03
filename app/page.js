@@ -7,8 +7,9 @@ import DealerSection from '@/components/game/DealerSection';
 import { BubbleChat } from 'flowise-embed-react';
 
 export default function Cards() {
+
   return (
-    <main className='max-h-[100%] overflow-hidden bg-neutral text-neutral-content'>
+    <main className='w-[100vw] overflow-hidden bg-neutral text-neutral-content'>
       <Player>
         {({ user, visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand }) => (
           <>

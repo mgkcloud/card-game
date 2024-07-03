@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
+
 import { DndContext, DragOverlay } from '@dnd-kit/core';
+
 import CardHand from './CardHand';
 import DeckPreview from './DeckPreview';
 import PlayingCard from './PlayingCard';
@@ -7,6 +10,7 @@ import CardDealer from './CardDealer';
 
 const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
+  const targetElementRef = useRef(null);
 
   const handleCardsLoaded = useCallback((hand, deck) => {
     onMoveCardToHand(hand);
@@ -15,7 +19,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
 
   const memoizedCardHand = useMemo(() => (
     <CardHand
-    className="mt-auto"
+      className="mt-auto"
       cardData={handCards}
       onSwipeDown={onMoveCardToDeck}
       onMoveCardToDeck={onMoveCardToDeck}
@@ -32,9 +36,18 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
     />
   ), [deckCards, onMoveCardToHand, isDeckOpen]);
 
+  useEffect(() => {
+    if (targetElementRef.current) {
+      disableBodyScroll(targetElementRef.current);
+    }
+    return () => {
+      clearAllBodyScrollLocks();
+    };
+  }, []);
+
   return (
     <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <section className="bg-neutral text-neutral-content relative min-h-screen overflow-visible" style={{ userSelect: 'none' }}>
+      <section ref={targetElementRef} className="bg-neutral text-neutral-content relative min-h-screen overflow-visible" style={{ userSelect: 'none' }}>
         <div className="relative hero-overlay bg-opacity-90"></div>
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center h-full">
           <header className="bg-neutral text-neutral-content w-full px-4 py-2 mb-4 rounded-lg">
@@ -49,7 +62,7 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
               </div>
             </div>
           </header>
-          <div className="w-full h-[100vh] md:h-[160vh] relative">
+          <div className="w-full h-[100vh] md:h-[160vh] relative" >
             {memoizedCardHand}
           </div>
         </div>

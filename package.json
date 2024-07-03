@@ -20,6 +20,7 @@
     "@supabase/supabase-js": "^2.43.4",
     "@use-gesture/react": "^10.3.1",
     "axios": "^1.7.2",
+    "body-scroll-lock": "^4.0.0-beta.0",
     "cheerio": "^1.0.0-rc.12",
     "cloudscraper": "^4.6.0",
     "crisp-sdk-web": "^1.0.22",

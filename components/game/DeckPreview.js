@@ -9,7 +9,7 @@ const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen })
     id: 'deck-preview',
   });
 
-  const [visibleCards, setVisibleCards] = useState(10);
+  const [visibleCards, setVisibleCards] = useState(60);
   const [isThumbnailView, setIsThumbnailView] = useState(true);
 
   const containerRef = useRef(null);
@@ -21,7 +21,7 @@ const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen })
       containerRef.current.clientHeight + 100
     ) {
       setVisibleCards((prevVisibleCards) =>
-        Math.min(prevVisibleCards + 10, deckCards.length)
+        Math.min(prevVisibleCards + 20, deckCards.length)
       );
     }
   }, [deckCards]);
