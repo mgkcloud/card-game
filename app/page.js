@@ -4,7 +4,7 @@
 import React from 'react';
 import Player from '@/components/game/Player';
 import DealerSection from '@/components/game/DealerSection';
-import { BubbleChat } from 'flowise-embed-react';
+// import { BubbleChat } from 'flowise-embed-react';
 
 export default function Cards() {
 
@@ -13,7 +13,7 @@ export default function Cards() {
       <Player>
         {({ user, visibleCards, deckCards, moveCardToDeck, moveCardToHand, isLoading, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand }) => (
           <>
-            <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" />
+            {/* <BubbleChat chatflowid="8ee9b276-744b-4838-b1b7-9f0561d0b65b" apiHost="http://supa.centaur-cloud.ts.net:3000" /> */}
             <DealerSection
             className='max-h-[100%]'
               handCards={visibleCards}
