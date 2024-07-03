@@ -8,7 +8,7 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards, onClearHand  }) => {
   const supabase = createClientComponentClient();
   const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
   const [tag, setTag] = useState('');
-  const [caseSelector, setCaseSelector] = useState('');
+  const [caseSelector, setCaseSelector] = useState('tumblr');
 
   const handleAddNewCards = useCallback(async () => {
     try {

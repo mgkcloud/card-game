@@ -6,7 +6,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const blogIdentifier = searchParams.get('blogIdentifier');
 
-  const url = `https://api.tumblr.com/v2/blog/${blogIdentifier}/posts?api_key=${process.env.NEXT_PUBLIC_TUMBLR_CONSUMER_KEY}&limit=50`;
+  const url = `https://api.tumblr.com/v2/blog/${blogIdentifier}/posts?api_key=${process.env.NEXT_PUBLIC_TUMBLR_CONSUMER_KEY}&limit=500`;
 
   try {
     const response = await axios.get(url);
