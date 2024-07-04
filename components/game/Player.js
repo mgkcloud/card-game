@@ -4,7 +4,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from 'react-hot-toast';
 import { fetchCards } from '@/app/utils/fetchCards';
 
-const Player = ({ children, onAddNewCards, onClearCards }) => {
+const Player = ({ children }) => {
   const [user, setUser] = useState(null);
   const [visibleCards, setVisibleCards] = useState([]);
   const [deckCards, setDeckCards] = useState([]);
@@ -21,9 +21,7 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
         .select('hand, deck')
         .eq('id', userId)
         .single();
-
       if (error) throw error;
-
       if (data && (data.hand || data.deck)) {
         setVisibleCards(data.hand || []);
         setDeckCards(data.deck || []);
@@ -62,7 +60,6 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
     }
   }, [cardsLoaded]);
 
-
   const handleAddNewCards = useCallback(async (tumblrUsername, caseSelector) => {
     try {
       const media = await fetchCards(caseSelector || 'tumblr', tumblrUsername);
@@ -79,32 +76,20 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
       const deck = allCards.slice(9);
       setVisibleCards(prev => [...prev, ...hand]);
       setDeckCards(prev => [...prev, ...deck]);
-      // if (user) {
-      //   await saveUserCards(user.id, [...visibleCards, ...hand], [...deckCards, ...deck]);
-      // }
     } catch (error) {
       console.error('Error adding new cards:', error);
       toast.error('Failed to add new cards');
     }
-  }, [user, visibleCards, deckCards]);
+  }, []);
 
   const handleClearCards = useCallback(() => {
     setVisibleCards([]);
     setDeckCards([]);
-    // if (user) {
-    //   saveUserCards(user.id, [], []);
-    // }
-    // localStorage.removeItem('userCards');
-  }, [user]);
-
+  }, []);
 
   const handleClearHand = useCallback(() => {
     setVisibleCards([]);
-
-  }, [user]);
-
-
-  
+  }, []);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -155,8 +140,8 @@ const Player = ({ children, onAddNewCards, onClearCards }) => {
         isLoading,
         onAddNewCards: handleAddNewCards,
         onClearCards: handleClearCards,
-        setVisibleCards: setVisibleCards,
-        setDeckCards: setDeckCards,
+        setVisibleCards,
+        setDeckCards,
         onClearHand: handleClearHand
       })}
     </main>

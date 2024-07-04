@@ -1,7 +1,8 @@
+// components/game/TopMenu.js
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector }) => {
+const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector, onDrawCard }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -46,8 +47,11 @@ const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, set
             <button onClick={onClearCards} className="btn btn-secondary mb-2">
               Clear Cards
             </button>
-            <button onClick={onClearHand} className="btn btn-secondary">
+            <button onClick={onClearHand} className="btn btn-secondary mb-2">
               Clear Hand
+            </button>
+            <button onClick={onDrawCard} className="btn btn-primary">
+              Draw Card
             </button>
           </>
         )}

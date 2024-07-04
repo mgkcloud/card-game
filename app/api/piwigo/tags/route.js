@@ -16,8 +16,8 @@ async function piwigoCategoriesCall(url, method, params = {}) {
       params: {
         url: fullUrl,
         api_key: '26ef364e34b049168905b2cbde75ae40',
-        render_js: 'true',
-        use_proxy: 'true',
+        render_js: true,
+        use_proxy: true,
       },
     });
 

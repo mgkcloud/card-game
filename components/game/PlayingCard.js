@@ -93,10 +93,16 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
           draggable="false"
           effect="blur"
           style={{
-            position: 'relative',
-            objectFit: 'cover',
+            position: isExpanded ? 'absolute' : 'relative', // Change to absolute when expanded
+            top: isExpanded ? '50%' : 'auto', // Center vertically
+            left: isExpanded ? '50%' : 'auto', // Center horizontally
+            transform: isExpanded ? 'translate(-50%, -50%)' : 'none', // Center using transform
+            objectFit: isExpanded ? 'contain' : 'cover', // Ensure the image fits within the container without cropping
             display: 'flex',
             zIndex: isExpanded ? 2 : 1,
+            width: isExpanded ? '30vw' : '100%', // Enlarge the image to 85% of the viewport width when expanded
+            maxWidth: isExpanded ? '30vw' : '100%', // Ensure the image does not exceed 85% of the viewport width
+            height: isExpanded ? 'auto' : '100%', // Allow the height to adjust automatically based on the width
           }}
           wrapperClassName="h-full w-full flex"
         />
