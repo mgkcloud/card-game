@@ -43,7 +43,7 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
 
   if (mediaType === 'video') {
     return (
-      <div className="relative rounded-lg w-full h-full overflow-hidden">
+      <div className={`relative rounded-lg w-full h-full ${isExpanded ? 'overflow-visible' : 'overflow-hidden'}`} >
         {firstFrame && (
           <LazyLoadImage
             src={firstFrame}
@@ -73,7 +73,7 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
 
   if (mediaType === 'photo') {
     return (
-      <div className="relative rounded-lg w-full h-full overflow-hidden">
+      <div className={`relative rounded-lg w-full h-full  ${isExpanded ? 'overflow-visible' : 'overflow-hidden'}`} >
         {isExpanded && (
           <LazyLoadImage
             src={src}
