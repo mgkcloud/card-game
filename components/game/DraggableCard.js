@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { useDraggable } from '@dnd-kit/core';
 import PlayingCard from './PlayingCard';
 
-const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded, setIsExpanded, isThumbnailView, isInDeck }) => {
+const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded, setIsExpanded, isThumbnailView, isInDeck, isInRevealSection }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: card?.id || 'dummy',
     data: { card, renderDragOverlay },
-    disabled: !isDeckOpen || isDeckOpen || !isInDeck, // Disable dragging if the deck is not open or if the card is not in the deck
+    disabled: !isDeckOpen || isInRevealSection, // Disable dragging if the deck is not open or if the card is not in the deck
   });
 
   const baseZIndex = 100;
@@ -56,10 +56,10 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
       style={{
         ...style,
         ...expandedStyle,
-        position: isInDeck ? (isDragging ? 'absolute' : 'relative') : 'absolute',
+        position: isInRevealSection ? 'relative' : (isInDeck ? (isDragging ? 'absolute' : 'relative') : 'absolute'),
         opacity: isDummy ? 0 : 1,
-        height: isInDeck ? '100%' : 'unset',
-        width: isInDeck ? '100%' : 'unset',
+        height: isInRevealSection ? '100%' : (isInDeck ? '100%' : 'unset'),
+        width: isInRevealSection ? '100%' : (isInDeck ? '100%' : 'unset'),
       }}
       animate={isDragging ? {} : {
         ...position,
@@ -69,14 +69,23 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       {...attributes}
       {...listeners}
-      drag={!isDummy && (!isInDeck || isDragging)} // Only allow dragging if the card is in the deck
+      drag={!isDummy && !isInRevealSection} // Only allow dragging if the card is in the deck
       dragConstraints={false} // Allow dragging beyond the container when dragging
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       dragElastic={0.2}
       onClick={onClick}
     >
-      {!isDummy && card && <PlayingCard card={card} isActive={isActive} isExpanded={isExpanded} isDragging={isDragging} isThumbnailView={isThumbnailView} />}
+      {!isDummy && card && (
+        <PlayingCard
+          card={card}
+          isActive={isActive}
+          isExpanded={isExpanded}
+          isDragging={isDragging}
+          isThumbnailView={isThumbnailView}
+          isInRevealSection={isInRevealSection}
+        />
+      )}
     </motion.div>
   );
 };

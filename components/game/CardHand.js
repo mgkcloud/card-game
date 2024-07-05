@@ -1,9 +1,9 @@
 // components/game/CardHand.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DraggableCard from './DraggableCard';
 
-const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDragOverlay, isDeckOpen }) => {
+const CardHand = ({ cardData, onSwipeDown, onMoveCardToDeck, renderDragOverlay, isDeckOpen, onCardReveal }) => {
   const totalCards = 60;
   const visibleCards = Math.min(cardData.length, 9);
   const initialActiveIndex = Math.floor(visibleCards / 2);
@@ -14,39 +14,35 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   const [isDragging, setIsDragging] = useState(false);
   const deckRef = useRef(null);
 
-  useEffect(() => {
-    const updateContainerSize = () => {
-      if (deckRef.current) {
-        const rect = deckRef.current.getBoundingClientRect();
-        setContainerSize({ width: rect.width, height: rect.height });
-      }
-    };
-
-    updateContainerSize();
-    window.addEventListener('resize', updateContainerSize);
-    return () => window.removeEventListener('resize', updateContainerSize);
+  const updateContainerSize = useCallback(() => {
+    if (deckRef.current) {
+      const rect = deckRef.current.getBoundingClientRect();
+      setContainerSize({ width: rect.width, height: rect.height });
+    }
   }, []);
 
   useEffect(() => {
-    if (activeIndex >= cardData.length) {
-      setActiveIndex(Math.max(0, cardData.length - 1));
-    }
-  }, [cardData, activeIndex]);
+    updateContainerSize();
+    window.addEventListener('resize', updateContainerSize);
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, [updateContainerSize]);
 
-  const handleKeyDown = (event) => {
+  useEffect(() => {
+    setActiveIndex((prevIndex) => Math.min(prevIndex, Math.max(0, cardData.length - 1)));
+  }, [cardData]);
+
+  const handleKeyDown = useCallback((event) => {
     if (event.key === 'ArrowDown') {
       handleRemoveCard(cardData[activeIndex]);
     }
-  };
+  }, [activeIndex, cardData]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [activeIndex, cardData]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
-  const calculateCardPosition = (index) => {
+  const calculateCardPosition = useCallback((index) => {
     const angleStep = (2 * Math.PI) / totalCards;
     const angle = ((index - initialActiveIndex + totalCards) % totalCards) * angleStep;
     const radius = Math.min(containerSize.width, containerSize.height) * 0.35;
@@ -61,30 +57,27 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
       scale: index === initialActiveIndex ? 1.1 : 1,
       zIndex: totalCards - Math.abs(index - initialActiveIndex),
     };
-  };
+  }, [containerSize, initialActiveIndex]);
 
-  const handleRemoveCard = (card) => {
+  const handleRemoveCard = useCallback((card) => {
     const cardElement = document.querySelector('.playing-card.active');
     if (cardElement) {
       const rect = cardElement.getBoundingClientRect();
       onSwipeDown(card, { x: rect.x, y: rect.y, width: rect.width, height: rect.height });
-      setActiveIndex((prevIndex) => {
-        if (prevIndex === cardData.length - 1) {
-          return Math.max(0, prevIndex - 1);
-        }
-        return prevIndex;
-      });
+      setActiveIndex((prevIndex) => Math.max(0, prevIndex === cardData.length - 1 ? prevIndex - 1 : prevIndex));
       setExpandedCard(null);
     }
-  };
+  }, [cardData.length, onSwipeDown]);
 
-  const handleDragStart = () => {
+  const handleDragStart = useCallback(() => {
     setIsDragging(true);
-  };
+  }, []);
 
-  const handleDragEnd = (_, info, card) => {
+  const handleDragEnd = useCallback((_, info, card) => {
     setIsDragging(false);
-    if (info.offset.y > 85) {
+    if (info.offset.y < -85) {
+      onCardReveal(card);
+    } else if (info.offset.y > 85) {
       handleRemoveCard(card);
     } else {
       const threshold = 20;
@@ -99,53 +92,51 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
         });
       }
     }
-  };
+  }, [cardData, expandedCard, handleRemoveCard, onCardReveal]);
 
-  const handleCardClick = (card, index) => {
+  const handleCardClick = useCallback((card, index) => {
     if (!isDragging) {
-      if (expandedCard) {
-        setExpandedCard(null);
-      } else {
-        setExpandedCard(card);
-        setActiveIndex(index);
-      }
+      setExpandedCard((prev) => prev ? null : card);
+      setActiveIndex(index);
     }
-  };
+  }, [isDragging]);
 
-  const visibleIndices = Array.from({ length: visibleCards }, (_, i) =>
+  const visibleIndices = useMemo(() => Array.from({ length: visibleCards }, (_, i) =>
     (activeIndex - initialActiveIndex + i + cardData.length) % cardData.length
-  );
+  ), [activeIndex, initialActiveIndex, visibleCards, cardData.length]);
+
+  const renderCard = useCallback((index) => {
+    const visibleIndex = index % visibleCards;
+    const cardIndex = visibleIndices[visibleIndex];
+    const card = cardData[cardIndex];
+    const { x, y, rotate, scale, zIndex } = calculateCardPosition(index);
+    const isActive = cardIndex === activeIndex;
+    const isDummy = index >= visibleCards;
+
+    return (
+      <DraggableCard
+        key={isDummy ? `dummy-${index}` : (card?.id || cardIndex)}
+        card={card}
+        isDummy={isDummy}
+        isActive={isActive}
+        position={{ x, y, rotate, scale, zIndex: expandedCard ? (isActive ? totalCards + 1 : zIndex) : zIndex }}
+        onDragStart={handleDragStart}
+        onDragEnd={(_, info) => handleDragEnd(_, info, card)}
+        onMoveCardToDeck={onMoveCardToDeck}
+        containerRef={deckRef}
+        renderDragOverlay={renderDragOverlay}
+        isDeckOpen={isDeckOpen}
+        onClick={() => handleCardClick(card, cardIndex)}
+        isExpanded={expandedCard === card}
+      />
+    );
+  }, [visibleCards, visibleIndices, cardData, activeIndex, calculateCardPosition, expandedCard, handleDragStart, handleDragEnd, onMoveCardToDeck, renderDragOverlay, isDeckOpen, handleCardClick]);
 
   return (
     <div ref={deckRef} className="relative w-full h-full overflow-visible">
       <div className="absolute inset-0 flex items-center justify-center">
         <AnimatePresence initial={false}>
-          {Array.from({ length: totalCards }).map((_, index) => {
-            const visibleIndex = index % visibleCards;
-            const cardIndex = visibleIndices[visibleIndex];
-            const card = cardData[cardIndex];
-            const { x, y, rotate, scale, zIndex } = calculateCardPosition(index);
-            const isActive = cardIndex === activeIndex;
-            const isDummy = index >= visibleCards;
-
-            return (
-              <DraggableCard
-                key={isDummy ? `dummy-${index}` : (card?.id || cardIndex)}
-                card={card}
-                isDummy={isDummy}
-                isActive={isActive}
-                position={{ x, y, rotate, scale, zIndex: expandedCard ? (isActive ? totalCards + 1 : zIndex) : zIndex }}
-                onDragStart={handleDragStart}
-                onDragEnd={(_, info) => handleDragEnd(_, info, card)}
-                onMoveCardToDeck={onMoveCardToDeck}
-                containerRef={deckRef}
-                renderDragOverlay={renderDragOverlay}
-                isDeckOpen={isDeckOpen}
-                onClick={() => handleCardClick(card, cardIndex)}
-                isExpanded={expandedCard === card}
-              />
-            );
-          })}
+          {Array.from({ length: totalCards }).map((_, index) => renderCard(index))}
         </AnimatePresence>
       </div>
       {expandedCard && (
@@ -159,4 +150,4 @@ const CardHand = ({ cardData, onSwipeDown, newCard, onMoveCardToDeck, renderDrag
   );
 };
 
-export default CardHand;
+export default React.memo(CardHand);

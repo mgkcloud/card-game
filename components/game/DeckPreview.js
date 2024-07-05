@@ -1,13 +1,10 @@
-// components/game/DeckPreview.js
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useDroppable } from '@dnd-kit/core';
 import DraggableCard from './DraggableCard';
 import { VariableSizeGrid as Grid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-
-import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
-
+import { addNewCardsForUser } from '@/app/utils/playerTools';
 
 const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag, setDeckCards }) => {
   const { setNodeRef } = useDroppable({ id: 'deck-preview' });
@@ -17,17 +14,15 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
   const gridRef = useRef(null);
   const [columnCount, setColumnCount] = useState(4);
 
-    // Example usage of the helper functions
-    const onAddNewCards = useCallback(() => {
-      addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
-    }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
-  
+  const onAddNewCards = useCallback(() => {
+    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
+  }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
 
   const loadMoreCards = useCallback(() => {
     setVisibleCards((prev) => Math.min(prev + 20, deckCards.length));
     console.log('Loading more cards...');
     onAddNewCards();
-  }, [deckCards.length]);
+  }, [deckCards.length, onAddNewCards]);
 
   useEffect(() => {
     if (gridRef.current) {
@@ -49,7 +44,7 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
     return () => window.removeEventListener('resize', handleResize);
   }, [columnCount]);
 
-  const Cell = ({ columnIndex, rowIndex, style }) => {
+  const Cell = useCallback(({ columnIndex, rowIndex, style }) => {
     const index = rowIndex * columnCount + columnIndex;
     if (index >= visibleCards || index >= deckCards.length) return null;
     const card = deckCards[index];
@@ -69,7 +64,7 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
           position={{ x: 0, y: 0, rotate: 0, scale: 1, zIndex: index }}
           onDragStart={() => {}}
           onDragEnd={(_, info) => {
-            if (info.offset.y > 85) {
+            if (info.offset.y < -85) {
               onMoveCardToHand(card);
             }
           }}
@@ -86,7 +81,7 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
         />
       </div>
     );
-  };
+  }, [visibleCards, deckCards, columnCount, onMoveCardToHand, isDeckOpen, isThumbnailView]);
 
   return (
     <motion.div
@@ -114,6 +109,7 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
               <Grid
                 ref={gridRef}
                 className="p-4"
+                style={{ overflow: 'visible' }}
                 columnCount={columnCount}
                 columnWidth={() => columnWidth}
                 height={height}
@@ -126,7 +122,6 @@ const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckO
                     loadMoreCards();
                   }
                 }}
-                
               >
                 {Cell}
               </Grid>
