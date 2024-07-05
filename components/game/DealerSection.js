@@ -7,9 +7,17 @@ import CardHand from './CardHand';
 import DeckPreview from './DeckPreview';
 import CardDealer from './CardDealer';
 
-const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, draggingCard, onAddNewCards, onClearCards, setVisibleCards, setDeckCards, onClearHand, sendMessage, messages }) => {
+
+const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, onDragEnd, visibleCards, setVisibleCards, setDeckCards, sendMessage, messages }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
   const targetElementRef = useRef(null);
+
+
+
+
+  const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
+  const [tag, setTag] = useState('');
+  const [caseSelector, setCaseSelector] = useState('tumblr');
 
   const handleCardsLoaded = useCallback((hand, deck) => {
     onMoveCardToHand(hand);
@@ -32,6 +40,15 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
       onMoveCardToHand={onMoveCardToHand}
       isDeckOpen={isDeckOpen}
       setIsDeckOpen={setIsDeckOpen}
+      tumblrUsername={tumblrUsername}
+      setTumblrUsername={setTumblrUsername}
+      tag={tag}
+      setTag={setTag}
+      caseSelector={caseSelector}
+      setCaseSelector={setCaseSelector}
+      setVisibleCards={setVisibleCards}
+      setDeckCards={setDeckCards}
+      visibleCards={visibleCards}
     />
   ), [deckCards, onMoveCardToHand, isDeckOpen]);
 
@@ -51,8 +68,13 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
           user={user}
           setVisibleCards={setVisibleCards}
           setDeckCards={setDeckCards}
-          onClearHand={onClearHand}
           sendMessage={sendMessage}
+          tumblrUsername={tumblrUsername}
+          setTumblrUsername={setTumblrUsername}
+          tag={tag}
+          setTag={setTag}
+          caseSelector={caseSelector}
+          setCaseSelector={setCaseSelector}
         />
         <div className="w-full h-[160vh] sm:h-[180vh] md:h-[220vh] relative" >
           {memoizedCardHand}

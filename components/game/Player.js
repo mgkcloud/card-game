@@ -1,4 +1,3 @@
-// components/game/Player.js
 import React, { useState, useEffect, useCallback } from 'react';
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { toast } from 'react-hot-toast';
@@ -6,12 +5,15 @@ import { fetchCards } from '@/app/utils/fetchCards';
 
 const Player = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [visibleCards, setVisibleCards] = useState([]);
-  const [deckCards, setDeckCards] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [cardsLoaded, setCardsLoaded] = useState(false);
   const supabase = createClientComponentClient();
   const [session, setSession] = useState(null);
+
+  const [visibleCards, setVisibleCards] = useState([]);
+  const [deckCards, setDeckCards] = useState([]);
+
 
   const loadUserCards = useCallback(async (userId) => {
     if (cardsLoaded) return;
@@ -34,7 +36,7 @@ const Player = ({ children }) => {
       console.error('Error loading user cards:', error);
       toast.error('Failed to load user cards');
     }
-  }, [cardsLoaded]);
+  }, [cardsLoaded, supabase]);
 
   const loadInitialCards = useCallback(async () => {
     if (cardsLoaded) return;
@@ -60,37 +62,6 @@ const Player = ({ children }) => {
     }
   }, [cardsLoaded]);
 
-  const handleAddNewCards = useCallback(async (tumblrUsername, caseSelector) => {
-    try {
-      const media = await fetchCards(caseSelector || 'tumblr', tumblrUsername);
-      const allCards = media.map((item, index) => ({
-        id: `card-${Date.now()}-${index}`,
-        title: `Media ${index + 1}`,
-        color: item.background_color || 'bg-primary',
-        textColor: 'text-white',
-        mediaSrc: item.image_url,
-        mediaType: item.type || 'photo',
-        items: [item.rarity || 'common'],
-      }));
-      const hand = allCards.slice(0, 9);
-      const deck = allCards.slice(9);
-      setVisibleCards(prev => [...prev, ...hand]);
-      setDeckCards(prev => [...prev, ...deck]);
-    } catch (error) {
-      console.error('Error adding new cards:', error);
-      toast.error('Failed to add new cards');
-    }
-  }, []);
-
-  const handleClearCards = useCallback(() => {
-    setVisibleCards([]);
-    setDeckCards([]);
-  }, []);
-
-  const handleClearHand = useCallback(() => {
-    setVisibleCards([]);
-  }, []);
-
   useEffect(() => {
     const checkUser = async () => {
       setIsLoading(true);
@@ -113,6 +84,7 @@ const Player = ({ children }) => {
     };
     checkUser();
   }, [supabase.auth, loadUserCards, loadInitialCards]);
+
 
   const handleMoveCardToDeck = useCallback((card) => {
     setDeckCards(prevDeck => [...prevDeck, card]);
@@ -138,11 +110,8 @@ const Player = ({ children }) => {
         moveCardToDeck: handleMoveCardToDeck,
         moveCardToHand: handleMoveCardToHand,
         isLoading,
-        onAddNewCards: handleAddNewCards,
-        onClearCards: handleClearCards,
         setVisibleCards,
         setDeckCards,
-        onClearHand: handleClearHand
       })}
     </main>
   );

@@ -3,36 +3,90 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDroppable } from '@dnd-kit/core';
 import DraggableCard from './DraggableCard';
+import { VariableSizeGrid as Grid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
-const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen }) => {
-  const { setNodeRef } = useDroppable({
-    id: 'deck-preview',
-  });
+import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
 
+
+const DeckPreview = ({ user, deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag, setDeckCards }) => {
+  const { setNodeRef } = useDroppable({ id: 'deck-preview' });
   const [visibleCards, setVisibleCards] = useState(60);
   const [isThumbnailView, setIsThumbnailView] = useState(true);
-
   const containerRef = useRef(null);
+  const gridRef = useRef(null);
+  const [columnCount, setColumnCount] = useState(4);
+
+    // Example usage of the helper functions
+    const onAddNewCards = useCallback(() => {
+      addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
+    }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
+  
 
   const loadMoreCards = useCallback(() => {
-    if (
-      containerRef.current &&
-      containerRef.current.scrollHeight - containerRef.current.scrollTop <=
-      containerRef.current.clientHeight + 100
-    ) {
-      setVisibleCards((prevVisibleCards) =>
-        Math.min(prevVisibleCards + 20, deckCards.length)
-      );
-    }
-  }, [deckCards]);
+    setVisibleCards((prev) => Math.min(prev + 20, deckCards.length));
+    console.log('Loading more cards...');
+    onAddNewCards();
+  }, [deckCards.length]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.addEventListener('scroll', loadMoreCards);
-      return () =>
-        containerRef.current.removeEventListener('scroll', loadMoreCards);
+    if (gridRef.current) {
+      gridRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
     }
-  }, [loadMoreCards]);
+  }, [deckCards, columnCount]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newColumnCount = window.innerWidth < 768 ? 3 : 4;
+      if (newColumnCount !== columnCount) {
+        setColumnCount(newColumnCount);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [columnCount]);
+
+  const Cell = ({ columnIndex, rowIndex, style }) => {
+    const index = rowIndex * columnCount + columnIndex;
+    if (index >= visibleCards || index >= deckCards.length) return null;
+    const card = deckCards[index];
+    if (!card) return null;
+
+    return (
+      <div style={{
+        ...style,
+        padding: '0.5rem',
+        boxSizing: 'border-box',
+      }}>
+        <DraggableCard
+          key={card.id || `deck-card-${index}`}
+          card={card}
+          isDummy={false}
+          isActive={false}
+          position={{ x: 0, y: 0, rotate: 0, scale: 1, zIndex: index }}
+          onDragStart={() => {}}
+          onDragEnd={(_, info) => {
+            if (info.offset.y > 85) {
+              onMoveCardToHand(card);
+            }
+          }}
+          onMoveCardToDeck={onMoveCardToHand}
+          containerRef={false}
+          renderDragOverlay={null}
+          isDeckOpen={isDeckOpen}
+          dragConstraints={false}
+          onClick={() => onMoveCardToHand(card)}
+          isExpanded={false}
+          setIsExpanded={() => {}}
+          isThumbnailView={isThumbnailView}
+          isInDeck={true}
+        />
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -47,43 +101,40 @@ const DeckPreview = ({ deckCards, onMoveCardToHand, isDeckOpen, setIsDeckOpen })
         onClick={() => setIsDeckOpen(!isDeckOpen)}
         style={{ touchAction: 'none' }}
       >
-        <div className="w-10 h-1 bg-gray-400 rounded-full " />
+        <div className="w-10 h-1 bg-gray-400 rounded-full" />
       </div>
-      <div
-        className="p-4 grid grid-cols-6 gap-2 overflow-y-auto h-full bg-gray-800 "
-        ref={containerRef}
-      >
-        <AnimatePresence>
-          {deckCards.slice(0, visibleCards).map((card, index) => (
-     
-                <DraggableCard
-                  key={card.id || `deck-card-${index}`}
-                  card={card}
-                  isDummy={false}
-                  isActive={false}
-                  position={{ x: 0, y: 0, rotate: 0, scale: 1, zIndex: index }}
-                  onDragStart={() => { }}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.y > 85) {
-                      onMoveCardToHand(card);
-                    }
-                  }}
-                  onMoveCardToDeck={onMoveCardToHand}
-                  containerRef={false} // Pass the container ref to allow dragging constraints
-                  renderDragOverlay={null}
-                  isDeckOpen={isDeckOpen}
-                  dragConstraints={false}
-                  onClick={() => onMoveCardToHand(card)}
-                  isExpanded={false}
-                  setIsExpanded={() => { }}
-                  isThumbnailView={isThumbnailView} // Pass the view mode state
-                  isInDeck={true}
-                />
-         
-          ))}
-        </AnimatePresence>
-      </div >
-    </motion.div >
+      <div className="h-[calc(100%-2.5rem)] bg-gray-800" ref={containerRef}>
+        <AutoSizer>
+          {({ height, width }) => {
+            const columnWidth = width / columnCount;
+            const rowHeight = columnWidth;
+            const rowCount = Math.ceil(Math.min(visibleCards, deckCards.length) / columnCount);
+
+            return (
+              <Grid
+                ref={gridRef}
+                className="p-4"
+                columnCount={columnCount}
+                columnWidth={() => columnWidth}
+                height={height}
+                rowCount={rowCount}
+                rowHeight={() => rowHeight}
+                width={width}
+                onItemsRendered={({ visibleRowStartIndex, visibleRowStopIndex }) => {
+                  const totalRows = Math.ceil(deckCards.length / columnCount);
+                  if (visibleRowStopIndex >= totalRows - 2 && visibleCards < deckCards.length) {
+                    loadMoreCards();
+                  }
+                }}
+                
+              >
+                {Cell}
+              </Grid>
+            );
+          }}
+        </AutoSizer>
+      </div>
+    </motion.div>
   );
 };
 

@@ -26,6 +26,7 @@ export default function Cards() {
               onAddNewCards={onAddNewCards}
               onClearCards={onClearCards}
               setVisibleCards={setVisibleCards}
+              visibleCards={visibleCards}
               setDeckCards={setDeckCards}
               onClearHand={onClearHand}
             />

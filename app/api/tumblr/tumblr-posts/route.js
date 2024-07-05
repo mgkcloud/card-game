@@ -5,8 +5,9 @@ import axios from 'axios';
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const blogIdentifier = searchParams.get('blogIdentifier');
+  const offset = searchParams.get('offset') || 0;
 
-  const url = `https://api.tumblr.com/v2/blog/${blogIdentifier}/posts?api_key=${process.env.NEXT_PUBLIC_TUMBLR_CONSUMER_KEY}&limit=500`;
+  const url = `https://api.tumblr.com/v2/blog/${blogIdentifier}/posts?api_key=${process.env.NEXT_PUBLIC_TUMBLR_CONSUMER_KEY}&limit=40&offset=${offset}`;
 
   try {
     const response = await axios.get(url);

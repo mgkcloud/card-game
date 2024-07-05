@@ -1,56 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-hot-toast';
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { fetchCards } from '@/app/utils/fetchCards';
+// import { toast } from 'react-hot-toast';
+// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+// import { fetchCards } from '@/app/utils/fetchCards';
 import TopMenu from './TopMenu';
+import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
 
-const CardDealer = ({ user, setVisibleCards, setDeckCards, onClearHand  }) => {
-  const supabase = createClientComponentClient();
-  const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
-  const [tag, setTag] = useState('');
-  const [caseSelector, setCaseSelector] = useState('tumblr');
+const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag }) => {
+  // const supabase = createClientComponentClient();
 
-  const handleAddNewCards = useCallback(async () => {
-    try {
-      const media = await fetchCards(caseSelector, tumblrUsername, tag);
-      const allCards = media.map((item, index) => ({
-        id: `card-${Date.now()}-${index}`,
-        title: `Media ${index + 1}`,
-        color: item.background_color || 'bg-primary',
-        textColor: 'text-white',
-        mediaSrc: item.image_url,
-        mediaType: item.type || 'photo',
-        items: [item.rarity || 'common'],
-      }));
-      const hand = allCards.slice(0, 9);
-      const deck = allCards.slice(9);
-      setVisibleCards(prev => [...prev, ...hand]);
-      setDeckCards(prev => [...prev, ...deck]);
-      if (user) {
-        // Save to database if user is logged in
-        // Implement saveUserCards function as needed
-      }
-    } catch (error) {
-      console.error('Error adding new cards:', error);
-      toast.error('Failed to add new cards');
-    }
+
+  // Example usage of the helper functions
+  const onAddNewCards = useCallback(() => {
+    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
   }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
 
-  const handleClearCards = useCallback(() => {
-    setVisibleCards([]);
-    setDeckCards([]);
-    if (user) {
-      // Clear user's cards in the database
-      // Implement clearUserCards function as needed
-    }
-    localStorage.removeItem('userCards');
+  const onClearCards = useCallback(() => {
+    clearCardsForUser(user, setVisibleCards, setDeckCards);
   }, [user, setVisibleCards, setDeckCards]);
+
+  const onClearHand = useCallback(() => {
+    clearHandForUser(user, setVisibleCards);
+  }, [user, setVisibleCards]);
 
 
   return (
     <TopMenu
-    onAddNewCards={handleAddNewCards}
-    onClearCards={handleClearCards}
+      onAddNewCards={onAddNewCards}
+      onClearCards={onClearCards}
       tumblrUsername={tumblrUsername}
       setTumblrUsername={setTumblrUsername}
       tag={tag}
@@ -58,7 +34,7 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards, onClearHand  }) => {
       caseSelector={caseSelector}
       setCaseSelector={setCaseSelector}
       setVisibleCards={setVisibleCards}
-      setDeckCards={setDeckCards} 
+      setDeckCards={setDeckCards}
       onClearHand={onClearHand}
     />
   );
