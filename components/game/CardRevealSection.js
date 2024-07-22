@@ -1,12 +1,12 @@
+// components/game/CardRevealSection.js
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useDroppable } from '@dnd-kit/core';
 import DraggableCard from './DraggableCard';
 
-const CardRevealSection = ({ revealedCards, onCardReveal }) => {
+const CardRevealSection = ({ revealedCards, onCardReveal, dealCards }) => {
   const { setNodeRef } = useDroppable({ id: 'card-reveal-section' });
-
-  console.log('CardRevealSection rendered with revealedCards:', revealedCards);
 
   return (
     <motion.div
@@ -35,7 +35,6 @@ const CardRevealSection = ({ revealedCards, onCardReveal }) => {
                 containerRef={false}
                 renderDragOverlay={null}
                 isDeckOpen={false}
-                dragConstraints={false}
                 onClick={() => {}}
                 isExpanded={false}
                 setIsExpanded={() => {}}
@@ -49,6 +48,9 @@ const CardRevealSection = ({ revealedCards, onCardReveal }) => {
           </div>
         ))}
       </div>
+      <button onClick={dealCards} className="mt-4 btn btn-primary">
+        Deal Cards
+      </button>
     </motion.div>
   );
 };

@@ -8,7 +8,7 @@ import CardRevealSection from './CardRevealSection';
 
 const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, visibleCards, setVisibleCards, setDeckCards, sendMessage, messages }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
-  const [revealedCards, setRevealedCards] = useState(Array(6).fill(null));
+  const [revealedCards, setRevealedCards] = useState(Array(5).fill(null));
   const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
   const [tag, setTag] = useState('');
   const [caseSelector, setCaseSelector] = useState('tumblr');
@@ -20,19 +20,23 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
   }, [onMoveCardToHand, setDeckCards]);
 
   const handleCardReveal = useCallback((card) => {
-    console.log('Revealing card:', card);
     setRevealedCards((prev) => {
       const emptyIndex = prev.findIndex((c) => c === null);
       if (emptyIndex !== -1) {
         const newRevealedCards = [...prev];
         newRevealedCards[emptyIndex] = card;
-        console.log('Updated revealedCards:', newRevealedCards);
         return newRevealedCards;
       }
       return prev;
     });
     setVisibleCards((prev) => prev.filter((c) => c.id !== card.id));
   }, [setVisibleCards]);
+
+  const dealCards = useCallback(() => {
+    const newRevealedCards = deckCards.slice(0, 5);
+    setRevealedCards(newRevealedCards);
+    setDeckCards((prev) => prev.slice(5));
+  }, [deckCards, setDeckCards]);
 
   const handleDragEnd = useCallback((event) => {
     console.log('Drag end event:', event);
@@ -105,11 +109,13 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
           caseSelector={caseSelector}
           setCaseSelector={setCaseSelector}
         />
-        <CardRevealSection revealedCards={revealedCards} onCardReveal={handleCardReveal} />
+        <CardRevealSection 
+          revealedCards={revealedCards} 
+          onCardReveal={handleCardReveal} 
+          dealCards={dealCards}
+        />
         <div className="w-full h-[145vh] sm:h-[180vh] md:h-[220vh] relative" >
-
           {memoizedCardHand}
-
         </div>
         {memoizedDeckPreview}
       </section>
