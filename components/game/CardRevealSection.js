@@ -1,20 +1,20 @@
 // components/game/CardRevealSection.js
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useDroppable } from '@dnd-kit/core';
-import DraggableCard from './DraggableCard';
+import React from "react";
+import { motion } from "framer-motion";
+import { useDroppable } from "@dnd-kit/core";
+import DraggableCard from "./DraggableCard";
 
 const CardRevealSection = ({ revealedCards, onCardReveal, dealCards }) => {
-  const { setNodeRef } = useDroppable({ id: 'card-reveal-section' });
+  const { setNodeRef } = useDroppable({ id: "card-reveal-section" });
 
   return (
     <motion.div
       ref={setNodeRef}
       className="w-max bg-gray-700 p-4 fixed top-[10vh] left-0 right-0 m-auto rounded-lg"
       initial={{ height: 0 }}
-      animate={{ height: 'auto' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      animate={{ height: "auto" }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       style={{ zIndex: 1000 }}
     >
       <div className="grid grid-cols-6 gap-4">

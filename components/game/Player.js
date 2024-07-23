@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { toast } from 'react-hot-toast';
-import { fetchCards } from '@/app/utils/fetchCards';
+import { toast } from "react-hot-toast";
+import { fetchCards } from "@/app/utils/fetchCards";
 
 const Player = ({ children }) => {
+  // const router = useRouter();
+  // const { title } = router.query;
+
   const [user, setUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -14,42 +17,47 @@ const Player = ({ children }) => {
   const [visibleCards, setVisibleCards] = useState([]);
   const [deckCards, setDeckCards] = useState([]);
 
-
-  const loadUserCards = useCallback(async (userId) => {
-    if (cardsLoaded) return;
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('hand, deck')
-        .eq('id', userId)
-        .single();
-      if (error) throw error;
-      if (data && (data.hand || data.deck)) {
-        setVisibleCards(data.hand || []);
-        setDeckCards(data.deck || []);
-        localStorage.setItem('userCards', JSON.stringify({ hand: data.hand || [], deck: data.deck || [] }));
-        setCardsLoaded(true);
-      } else {
-        await loadInitialCards();
+  const loadUserCards = useCallback(
+    async (userId) => {
+      if (cardsLoaded) return;
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("hand, deck")
+          .eq("id", userId)
+          .single();
+        if (error) throw error;
+        if (data && (data.hand || data.deck)) {
+          setVisibleCards(data.hand || []);
+          setDeckCards(data.deck || []);
+          localStorage.setItem(
+            "userCards",
+            JSON.stringify({ hand: data.hand || [], deck: data.deck || [] }),
+          );
+          setCardsLoaded(true);
+        } else {
+          await loadInitialCards();
+        }
+      } catch (error) {
+        console.error("Error loading user cards:", error);
+        toast.error("Failed to load user cards");
       }
-    } catch (error) {
-      console.error('Error loading user cards:', error);
-      toast.error('Failed to load user cards');
-    }
-  }, [cardsLoaded, supabase]);
+    },
+    [cardsLoaded, supabase],
+  );
 
   const loadInitialCards = useCallback(async () => {
     if (cardsLoaded) return;
     try {
-      const media = await fetchCards('tumblr', 'sabertoothwalrus.tumblr.com');
+      const media = await fetchCards("tumblr", "sabertoothwalrus.tumblr.com");
       const allCards = media.map((item, index) => ({
         id: `card-${Date.now()}-${index}`,
         title: `Media ${index + 1}`,
-        color: item.background_color || 'bg-primary',
-        textColor: 'text-white',
+        color: item.background_color || "bg-primary",
+        textColor: "text-white",
         mediaSrc: item.image_url,
-        mediaType: item.type || 'photo',
-        items: [item.rarity || 'common'],
+        mediaType: item.type || "photo",
+        items: [item.rarity || "common"],
       }));
       const hand = allCards.slice(0, 9);
       const deck = allCards.slice(9);
@@ -57,8 +65,8 @@ const Player = ({ children }) => {
       setDeckCards(deck);
       setCardsLoaded(true);
     } catch (error) {
-      console.error('Error loading initial cards:', error);
-      toast.error('Failed to load initial cards');
+      console.error("Error loading initial cards:", error);
+      toast.error("Failed to load initial cards");
     }
   }, [cardsLoaded]);
 
@@ -66,7 +74,10 @@ const Player = ({ children }) => {
     const checkUser = async () => {
       setIsLoading(true);
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
         if (error) throw error;
         if (session) {
           setUser(session.user);
@@ -85,25 +96,25 @@ const Player = ({ children }) => {
     checkUser();
   }, [supabase.auth, loadUserCards, loadInitialCards]);
 
-
   const handleMoveCardToDeck = useCallback((card) => {
-    setDeckCards(prevDeck => [...prevDeck, card]);
-    setVisibleCards(prevHand => prevHand.filter(c => c.id !== card.id));
+    setDeckCards((prevDeck) => [...prevDeck, card]);
+    setVisibleCards((prevHand) => prevHand.filter((c) => c.id !== card.id));
   }, []);
 
   const handleMoveCardToHand = useCallback((card) => {
-    setVisibleCards(prevHand => {
-      if (!prevHand.some(c => c.id === card.id)) {
+    setVisibleCards((prevHand) => {
+      if (!prevHand.some((c) => c.id === card.id)) {
         return [...prevHand, card];
       }
       return prevHand;
     });
-    setDeckCards(prevDeck => prevDeck.filter(c => c.id !== card.id));
+    setDeckCards((prevDeck) => prevDeck.filter((c) => c.id !== card.id));
   }, []);
 
   return (
-    <main className='max-h-[100vh] overflow-hidden'>
+    <main className="max-h-[100vh] overflow-hidden">
       {children({
+        // title,
         user,
         visibleCards,
         deckCards,

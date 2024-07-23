@@ -1,17 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 // import { toast } from 'react-hot-toast';
 // import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 // import { fetchCards } from '@/app/utils/fetchCards';
-import TopMenu from './TopMenu';
-import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
+import TopMenu from "./TopMenu";
+import {
+  addNewCardsForUser,
+  clearCardsForUser,
+  clearHandForUser,
+} from "@/app/utils/playerTools";
 
-const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag }) => {
+const CardDealer = ({
+  user,
+  setVisibleCards,
+  setDeckCards,
+  tumblrUsername,
+  setTumblrUsername,
+  caseSelector,
+  setCaseSelector,
+  tag,
+  setTag,
+}) => {
   // const supabase = createClientComponentClient();
-
 
   // Example usage of the helper functions
   const onAddNewCards = useCallback(() => {
-    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
+    addNewCardsForUser(
+      user,
+      tumblrUsername,
+      caseSelector,
+      tag,
+      setVisibleCards,
+      setDeckCards,
+    );
   }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
 
   const onClearCards = useCallback(() => {
@@ -21,7 +41,6 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTu
   const onClearHand = useCallback(() => {
     clearHandForUser(user, setVisibleCards);
   }, [user, setVisibleCards]);
-
 
   return (
     <TopMenu
