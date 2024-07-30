@@ -1,15 +1,33 @@
 // components/game/DraggableCard.js
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useDraggable } from '@dnd-kit/core';
-import PlayingCard from './PlayingCard';
+import React from "react";
+import { motion } from "framer-motion";
+import { useDraggable } from "@dnd-kit/core";
+import PlayingCard from "./PlayingCard";
 
-const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragEnd, onMoveCardToDeck, containerRef, renderDragOverlay, isDeckOpen, onClick, isExpanded, setIsExpanded, isThumbnailView, isInDeck, isInRevealSection }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: card?.id || 'dummy',
-    data: { card, renderDragOverlay },
-    disabled: !isDeckOpen || isInRevealSection, // Disable dragging if the deck is not open or if the card is not in the deck
-  });
+const DraggableCard = ({
+  card,
+  isDummy,
+  isActive,
+  position,
+  onDragStart,
+  onDragEnd,
+  onMoveCardToDeck,
+  containerRef,
+  renderDragOverlay,
+  isDeckOpen,
+  onClick,
+  isExpanded,
+  setIsExpanded,
+  isThumbnailView,
+  isInDeck,
+  isInRevealSection,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: card?.id || "dummy",
+      data: { card, renderDragOverlay },
+      disabled: !isDeckOpen || isInRevealSection, // Disable dragging if the deck is not open or if the card is not in the deck
+    });
 
   const baseZIndex = 100;
   const activeZIndex = 200;
@@ -17,7 +35,7 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
   const expandedZIndex = 20000;
 
   const calculateScale = () => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return 1;
     }
 
@@ -32,16 +50,26 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
 
   const expandedScale = calculateScale();
 
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: isDragging ? draggingZIndex : (isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex)),
-    transition: isDragging ? 'none' : undefined,
-  } : {};
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        zIndex: isDragging
+          ? draggingZIndex
+          : isExpanded
+            ? expandedZIndex
+            : isActive
+              ? activeZIndex
+              : baseZIndex + position.zIndex,
+        transition: isDragging ? "none" : undefined,
+      }
+    : {};
 
-  const expandedStyle = isExpanded ? {
-    transform: `scale(${expandedScale})`,
-    zIndex: expandedZIndex,
-  } : {};
+  const expandedStyle = isExpanded
+    ? {
+        transform: `scale(${expandedScale})`,
+        zIndex: expandedZIndex,
+      }
+    : {};
 
   const handleHold = () => {
     if (isActive) {
@@ -52,21 +80,35 @@ const DraggableCard = ({ card, isDummy, isActive, position, onDragStart, onDragE
   return (
     <motion.div
       ref={setNodeRef}
-      className={`playing-card ${isActive ? 'active' : ''}`}
+      className={`playing-card ${isActive ? "active" : ""}`}
       style={{
         ...style,
         ...expandedStyle,
-        position: isInRevealSection ? 'relative' : (isInDeck ? (isDragging ? 'absolute' : 'relative') : 'absolute'),
+        position: isInRevealSection
+          ? "relative"
+          : isInDeck
+            ? isDragging
+              ? "absolute"
+              : "relative"
+            : "absolute",
         opacity: isDummy ? 0 : 1,
-        height: isInRevealSection ? '100%' : (isInDeck ? '100%' : 'unset'),
-        width: isInRevealSection ? '100%' : (isInDeck ? '100%' : 'unset'),
+        height: isInRevealSection ? "100%" : isInDeck ? "100%" : "unset",
+        width: isInRevealSection ? "100%" : isInDeck ? "100%" : "unset",
       }}
-      animate={isDragging ? {} : {
-        ...position,
-        scale: isExpanded ? expandedScale : position.scale,
-        zIndex: isExpanded ? expandedZIndex : (isActive ? activeZIndex : baseZIndex + position.zIndex),
-      }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      animate={
+        isDragging
+          ? {}
+          : {
+              ...position,
+              scale: isExpanded ? expandedScale : position.scale,
+              zIndex: isExpanded
+                ? expandedZIndex
+                : isActive
+                  ? activeZIndex
+                  : baseZIndex + position.zIndex,
+            }
+      }
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       {...attributes}
       {...listeners}
       drag={!isDummy && !isInRevealSection} // Only allow dragging if the card is in the deck

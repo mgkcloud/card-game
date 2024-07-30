@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "node server.js",
     "build": "next build",
     "postbuild": "next-sitemap",
-    "start": "next start",
+    "start": "NODE_ENV=development node server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -15,11 +15,14 @@
     "@headlessui/react": "^1.7.18",
     "@json2csv/plainjs": "^7.0.6",
     "@react-spring/web": "^9.7.3",
+    "@socket.io/admin-ui": "^0.5.1",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.43.4",
     "@use-gesture/react": "^10.3.1",
+    "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
     "body-scroll-lock": "^4.0.0-beta.0",
     "cheerio": "^1.0.0-rc.12",
     "cloudscraper": "^4.6.0",
@@ -27,6 +30,7 @@
     "crypto": "^1.0.1",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
+    "express": "^4.19.2",
     "flowise-embed-react": "^1.0.2",
     "form-data": "^4.0.0",
     "framer-motion": "^11.2.11",
@@ -55,13 +59,26 @@
     "react-window": "^1.8.10",
     "request": "^2.88.2",
     "sharp": "^0.33.4",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "stripe": "^13.11.0",
-    "tailwindcss-animated": "^1.1.0"
+    "tailwindcss-animated": "^1.1.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "daisyui": "^4.10.1",
+    "dotenv": "^16.4.5",
+    "http": "^0.0.1-security",
+    "morgan": "^1.10.0",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5"
   }
 }
