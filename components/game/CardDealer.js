@@ -1,7 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-// import { toast } from 'react-hot-toast';
-// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-// import { fetchCards } from '@/app/utils/fetchCards';
+import React, { useCallback } from "react";
 import TopMenu from "./TopMenu";
 import {
   addNewCardsForUser,
@@ -20,9 +17,6 @@ const CardDealer = ({
   tag,
   setTag,
 }) => {
-  // const supabase = createClientComponentClient();
-
-  // Example usage of the helper functions
   const onAddNewCards = useCallback(() => {
     addNewCardsForUser(
       user,
@@ -33,6 +27,18 @@ const CardDealer = ({
       setDeckCards,
     );
   }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
+
+  const onAddNewCardsToDeck = useCallback(() => {
+    addNewCardsForUser(
+      user,
+      tumblrUsername,
+      caseSelector,
+      tag,
+      setVisibleCards,
+      setDeckCards,
+      "deck",
+    );
+  }, [setDeckCards]);
 
   const onClearCards = useCallback(() => {
     clearCardsForUser(user, setVisibleCards, setDeckCards);
@@ -45,6 +51,7 @@ const CardDealer = ({
   return (
     <TopMenu
       onAddNewCards={onAddNewCards}
+      onAddNewCardsToDeck={onAddNewCardsToDeck}
       onClearCards={onClearCards}
       tumblrUsername={tumblrUsername}
       setTumblrUsername={setTumblrUsername}

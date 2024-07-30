@@ -15,14 +15,17 @@ dotenv.config({ path: `${__dirname}/.env.local` });
 const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
+const allowedOrigins = [
+  "https://admin.socket.io",
+  "https://cards.jsvoid.com",
+  "*",
+];
 
 nextApp
   .prepare()
   .then(() => {
     app.enable("trust proxy");
-    app.use(
-      cors({ origin: ["https://admin.socket.io"], optionsSuccessStatus: 200 }),
-    );
+    app.use(cors({ origin: allowedOrigins, optionsSuccessStatus: 200 }));
 
     if (process.env.NODE_ENV !== "production") {
       app.use(morgan("combined"));
@@ -106,7 +109,7 @@ nextApp
     // start server
     server.listen(PORT, (err) => {
       if (err) throw err;
-      console.log(`Application running http://localhost:${PORT}`);
+      console.log(`Game running http://localhost:${PORT}/room/poker`);
     });
   })
   .catch((err) => {

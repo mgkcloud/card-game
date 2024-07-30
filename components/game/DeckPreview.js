@@ -130,7 +130,10 @@ const DeckPreview = ({
       >
         <div className="w-10 h-1 bg-gray-400 rounded-full" />
       </div>
-      <div className="h-[calc(100%-2.5rem)] bg-gray-800" ref={containerRef}>
+      <div
+        className="h-[calc(100%-2.5rem)] bg-gray-800 overflow-y-auto"
+        ref={containerRef}
+      >
         <AutoSizer>
           {({ height, width }) => {
             const columnWidth = width / columnCount;

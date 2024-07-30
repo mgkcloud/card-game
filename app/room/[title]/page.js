@@ -22,6 +22,7 @@ export default function Table({ params }) {
       }) => (
         <>
           <DealerSection
+            user={user}
             title={params.title}
             className="max-h-[100%]"
             handCards={visibleCards}
@@ -29,7 +30,6 @@ export default function Table({ params }) {
             onMoveCardToDeck={moveCardToDeck}
             onMoveCardToHand={moveCardToHand}
             isLoading={isLoading}
-            user={user}
             onAddNewCards={onAddNewCards}
             onClearCards={onClearCards}
             setVisibleCards={setVisibleCards}

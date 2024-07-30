@@ -5,11 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import {
-  disableBodyScroll,
-  enableBodyScroll,
-  clearAllBodyScrollLocks,
-} from "body-scroll-lock";
+import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock";
 import { DndContext } from "@dnd-kit/core";
 import CardHand from "./CardHand";
 import DeckPreview from "./DeckPreview";
@@ -18,12 +14,12 @@ import CardRevealSection from "./CardRevealSection";
 import io from "socket.io-client";
 
 const DealerSection = ({
+  user,
   title,
   handCards,
   deckCards,
   onMoveCardToDeck,
   onMoveCardToHand,
-  user,
   session,
   onDragStart,
   visibleCards,
@@ -50,7 +46,6 @@ const DealerSection = ({
     socket.emit("join_room", room);
 
     socket.on("players_update", (playerUpdates) => {
-      console.log(updates);
       setUpdates(playerUpdates);
     });
 
@@ -77,6 +72,7 @@ const DealerSection = ({
 
   const handleMoveCardToHand = useCallback(
     (card) => {
+      onMoveCardToHand(card);
       setDeckCards((prevDeckCards) =>
         prevDeckCards.filter((c) => c.id !== card.id),
       );
@@ -145,6 +141,7 @@ const DealerSection = ({
   const memoizedDeckPreview = useMemo(
     () => (
       <DeckPreview
+        user={user}
         deckCards={deckCards}
         onMoveCardToHand={handleMoveCardToHand}
         isDeckOpen={isDeckOpen}
@@ -158,7 +155,6 @@ const DealerSection = ({
         setVisibleCards={setVisibleCards}
         setDeckCards={setDeckCards}
         visibleCards={visibleCards}
-        user={user}
       />
     ),
     [

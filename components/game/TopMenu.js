@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 const TopMenu = ({
   onAddNewCards,
+  onAddNewCardsToDeck,
   onClearCards,
   onClearHand,
   tumblrUsername,
@@ -54,6 +55,12 @@ const TopMenu = ({
             </select>
             <button onClick={onAddNewCards} className="btn btn-primary mb-2">
               Add New Cards
+            </button>
+            <button
+              onClick={onAddNewCardsToDeck}
+              className="btn btn-primary mb-2"
+            >
+              Add New Deck Collection
             </button>
             <button onClick={onClearCards} className="btn btn-secondary mb-2">
               Clear Cards
