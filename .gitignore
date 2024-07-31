@@ -46,3 +46,5 @@ public/sitemap-0.xml
 # open-next
 .open-next
 card-game.code-workspace
+
+*storybook.log

@@ -7,9 +7,12 @@
   "extends": [
     "eslint:recommended",
     "plugin:@next/next/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:storybook/recommended"
   ],
-  "plugins": ["prettier"],
+  "plugins": [
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -18,8 +21,16 @@
     "sourceType": "module"
   },
   "rules": {
-    "prettier/prettier": ["error", { "endOfLine": "auto" }],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
     "react/react-in-jsx-scope": "off"
   },
-  "comma-dangle": ["error", "always"]
+  "comma-dangle": [
+    "error",
+    "always"
+  ]
 }
