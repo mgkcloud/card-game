@@ -4,9 +4,12 @@
 
 html,
 body {
+  background-image: url("./bg_colorful.jpeg"); /* Update with your image path */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Keeps the image fixed when scrolling */
   scroll-behavior: smooth !important;
 }
-
 /* It makes the HTML progress bar filling smooth when value change. */
 progress::-webkit-progress-value {
   transition: 0.6s width ease-out;
@@ -17,15 +20,14 @@ progress::-webkit-progress-value {
     @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer;
   }
 
-  .btn-gradient:disabled { 
-    @apply bg-gray-500/30 !animate-none; 
+  .btn-gradient:disabled {
+    @apply bg-gray-500/30 !animate-none;
   }
 
   .btn {
     @apply !capitalize;
   }
 }
-
 
 /* globals.css */
 
@@ -55,17 +57,16 @@ progress::-webkit-progress-value {
     }
   }
 
-
   .glitter-border {
     @apply border-4 border-gray-300;
-    background: repeating-linear-gradient(45deg,
+    background: repeating-linear-gradient(
+        45deg,
         #ddd,
         #ddd 1px,
         transparent 1px,
-        transparent 5px),
-      linear-gradient(110deg,
-        rgba(255, 255, 255, 0.3) 5%,
-        transparent 5%);
+        transparent 5px
+      ),
+      linear-gradient(110deg, rgba(255, 255, 255, 0.3) 5%, transparent 5%);
     background-size: 10px 10px;
   }
 }

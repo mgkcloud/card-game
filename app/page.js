@@ -25,9 +25,41 @@ export default function Cards() {
       className="w-[100vw] h-[100vh]  bg-neutral text-neutral-content"
       style={{ userSelect: "none", WebkitUserSelect: "none" }}
     >
-      <div className="bg-neutral text-neutral-content">
-        {user ? <ButtonAccount /> : <ButtonSignin />}
-      </div>
+      <Player>
+        {({
+          user,
+          visibleCards,
+          deckCards,
+          moveCardToDeck,
+          moveCardToHand,
+          isLoading,
+          onAddNewCards,
+          onClearCards,
+          setVisibleCards,
+          setDeckCards,
+          onClearHand,
+        }) => (
+          <>
+            <DealerSection
+              isHome={true}
+              user={user}
+              title={"/"}
+              className="max-h-[100%]"
+              handCards={visibleCards}
+              deckCards={deckCards}
+              onMoveCardToDeck={moveCardToDeck}
+              onMoveCardToHand={moveCardToHand}
+              isLoading={isLoading}
+              onAddNewCards={onAddNewCards}
+              onClearCards={onClearCards}
+              setVisibleCards={setVisibleCards}
+              visibleCards={visibleCards}
+              setDeckCards={setDeckCards}
+              onClearHand={onClearHand}
+            />
+          </>
+        )}
+      </Player>
     </main>
   );
 }

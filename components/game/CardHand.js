@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DraggableCard from "./DraggableCard";
 
 const CardHand = ({
+  isHome,
   cardData,
   onSwipeDown,
   onMoveCardToDeck,
@@ -165,6 +166,7 @@ const CardHand = ({
 
       return (
         <DraggableCard
+          isHome={isHome}
           key={isDummy ? `dummy-${index}` : card?.id || cardIndex}
           card={card}
           isDummy={isDummy}

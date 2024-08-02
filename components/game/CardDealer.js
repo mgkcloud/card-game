@@ -5,7 +5,8 @@ import {
   clearCardsForUser,
   clearHandForUser,
 } from "@/app/utils/playerTools";
-
+import ButtonSignin from "@/components/ButtonSignin";
+import ButtonAccount from "@/components/ButtonAccount";
 const CardDealer = ({
   user,
   setVisibleCards,
@@ -49,20 +50,25 @@ const CardDealer = ({
   }, [user, setVisibleCards]);
 
   return (
-    <TopMenu
-      onAddNewCards={onAddNewCards}
-      onAddNewCardsToDeck={onAddNewCardsToDeck}
-      onClearCards={onClearCards}
-      tumblrUsername={tumblrUsername}
-      setTumblrUsername={setTumblrUsername}
-      tag={tag}
-      setTag={setTag}
-      caseSelector={caseSelector}
-      setCaseSelector={setCaseSelector}
-      setVisibleCards={setVisibleCards}
-      setDeckCards={setDeckCards}
-      onClearHand={onClearHand}
-    />
+    <>
+      <div className="bg-neutral text-neutral-content">
+        {user ? <ButtonAccount /> : <ButtonSignin />}
+      </div>
+      <TopMenu
+        onAddNewCards={onAddNewCards}
+        onAddNewCardsToDeck={onAddNewCardsToDeck}
+        onClearCards={onClearCards}
+        tumblrUsername={tumblrUsername}
+        setTumblrUsername={setTumblrUsername}
+        tag={tag}
+        setTag={setTag}
+        caseSelector={caseSelector}
+        setCaseSelector={setCaseSelector}
+        setVisibleCards={setVisibleCards}
+        setDeckCards={setDeckCards}
+        onClearHand={onClearHand}
+      />
+    </>
   );
 };
 

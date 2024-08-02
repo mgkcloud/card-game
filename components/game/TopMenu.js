@@ -1,5 +1,5 @@
 // components/game/TopMenu.js
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 const TopMenu = ({
@@ -20,7 +20,7 @@ const TopMenu = ({
   return (
     <motion.div
       className="fixed top-0 left-0 w-full bg-gray-800"
-      style={{ zIndex: isOpen ? 20000 : 200 }}
+      style={{ zIndex: isOpen ? 13000 : 1200 }}
       animate={{ height: isOpen ? "50vh" : "20px" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
@@ -76,7 +76,7 @@ const TopMenu = ({
       </div>
 
       <div
-        className="w-full h-10 flex justify-center items-center cursor-pointer bg-gray-800 rounded-b-2xl"
+        className="w-full h-4 flex justify-center items-center cursor-pointer bg-gray-800 rounded-b-2xl"
         onClick={() => setIsOpen(!isOpen)}
         style={{ touchAction: "none" }}
       >

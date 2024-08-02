@@ -5,19 +5,24 @@ import { motion } from "framer-motion";
 import { useDroppable } from "@dnd-kit/core";
 import DraggableCard from "./DraggableCard";
 
-const CardRevealSection = ({ revealedCards, onCardReveal, dealCards }) => {
+const CardRevealSection = ({
+  isHome,
+  revealedCards,
+  onCardReveal,
+  dealCards,
+}) => {
   const { setNodeRef } = useDroppable({ id: "card-reveal-section" });
 
   return (
     <motion.div
       ref={setNodeRef}
-      className="w-max bg-gray-700 p-4 fixed top-[10vh] left-0 right-0 m-auto rounded-lg"
+      className={`w-max bg-gray-700 p-4 fixed ${isHome ? "top-[10vh]" : "top-[26vh]"}  left-0 right-0 m-auto rounded-lg}`}
       initial={{ height: 0 }}
       animate={{ height: "auto" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      style={{ zIndex: 1000 }}
+      style={{ zIndex: 10 }}
     >
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {revealedCards.map((card, index) => (
           <div
             key={index}
@@ -25,10 +30,11 @@ const CardRevealSection = ({ revealedCards, onCardReveal, dealCards }) => {
           >
             {card ? (
               <DraggableCard
+                isHome={isHome}
                 card={card}
                 isDummy={false}
                 isActive={false}
-                position={{ x: 0, y: 0, rotate: 0, scale: 1, zIndex: 1 }}
+                position={{ x: 0, y: -130, rotate: 0, scale: 1, zIndex: 1 }}
                 onDragStart={() => {}}
                 onDragEnd={() => {}}
                 onMoveCardToDeck={() => {}}
@@ -48,9 +54,9 @@ const CardRevealSection = ({ revealedCards, onCardReveal, dealCards }) => {
           </div>
         ))}
       </div>
-      <button onClick={dealCards} className="mt-4 btn btn-primary">
+      {/* <button onClick={dealCards} className="mt-4 btn btn-primary">
         Deal Cards
-      </button>
+      </button> */}
     </motion.div>
   );
 };

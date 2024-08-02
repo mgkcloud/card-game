@@ -12,8 +12,10 @@ import DeckPreview from "./DeckPreview";
 import CardDealer from "./CardDealer";
 import CardRevealSection from "./CardRevealSection";
 import io from "socket.io-client";
-
+import GameSection from "./GameSection";
+import GamePlayers from "./GamePlayers";
 const DealerSection = ({
+  isHome,
   user,
   title,
   handCards,
@@ -38,6 +40,7 @@ const DealerSection = ({
   const targetElementRef = useRef(null);
   const [socket, setSocket] = useState();
   const [updates, setUpdates] = useState([]);
+  const [players, setPlayers] = useState(0);
 
   useEffect(() => {
     const socket = io("http://localhost:3000");
@@ -47,6 +50,7 @@ const DealerSection = ({
 
     socket.on("players_update", (playerUpdates) => {
       setUpdates(playerUpdates);
+      setPlayers((players) => players + 1);
     });
 
     socket.on("post_card", (card) => {
@@ -128,6 +132,7 @@ const DealerSection = ({
   const memoizedCardHand = useMemo(
     () => (
       <CardHand
+        isHome={isHome}
         cardData={handCards}
         onSwipeDown={onMoveCardToDeck}
         onMoveCardToDeck={onMoveCardToDeck}
@@ -189,14 +194,37 @@ const DealerSection = ({
           caseSelector={caseSelector}
           setCaseSelector={setCaseSelector}
         />
-        <CardRevealSection
-          revealedCards={revealedCards}
-          onCardReveal={handleCardReveal}
-          dealCards={dealCards}
-        />
+        {!isHome ? (
+          <>
+            <GamePlayers
+              isHome={isHome}
+              cardData={handCards}
+              onSwipeDown={onMoveCardToDeck}
+              onMoveCardToDeck={onMoveCardToDeck}
+              isDeckOpen={isDeckOpen}
+              onCardReveal={handleCardReveal}
+              players={players}
+            />
+            <CardRevealSection
+              isHome={false}
+              revealedCards={revealedCards}
+              onCardReveal={handleCardReveal}
+              dealCards={dealCards}
+            />
+          </>
+        ) : (
+          <></>
+        )}
         <div className="w-full h-[145vh] sm:h-[180vh] md:h-[220vh] relative">
           {memoizedCardHand}
         </div>
+        {isHome ? (
+          <div className="min-h-screen bg-gray-800 text-gray-100">
+            <GameSection deckCards={deckCards} />
+          </div>
+        ) : (
+          <></>
+        )}
         {memoizedDeckPreview}
       </section>
     </DndContext>

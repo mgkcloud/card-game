@@ -22,7 +22,7 @@ const getMediaTypeFromExtension = (src) => {
   }
 };
 
-const MediaContent = ({ src, isExpanded, isActive }) => {
+const MediaContent = ({ src, isExpanded, isActive, isOpponentSection }) => {
   const mediaType = getMediaTypeFromExtension(src);
   const [firstFrame, setFirstFrame] = useState(null);
 
@@ -118,20 +118,21 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
 };
 
 const PlayingCard = ({
+  isHome,
   card,
   isActive,
   isDragging,
   isInDeck,
   isExpanded,
   isThumbnailView,
+  isOpponentSection,
 }) => {
   // const baseClassName = `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`;
-
-  const baseClassName =
-    !isThumbnailView || isDragging
+  const baseClassName = isOpponentSection
+    ? `w-24 h-20 sm:w-14 sm:h-22 rounded-lg ${card.color} ${card.textColor}`
+    : !isThumbnailView || isDragging
       ? `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`
       : `w-full aspect-square rounded-lg ${card.color} ${card.textColor}`;
-
   const variants = {
     normal: {
       scale: isActive ? 1.1 : 1,
@@ -139,18 +140,21 @@ const PlayingCard = ({
         ? "0 0 0 3px #00BFFF, 0 0 15px #00BFFF"
         : "0 3px 7px rgba(0,0,0,0.2)",
       opacity: isActive ? 1 : 0.7,
+      translateY: isInDeck || isExpanded ? "0px" : !isHome ? "130px" : "60px",
     },
     dragging: {
       scale: 0.7,
-      boxShadow: "0 10px 20px rgba(0,0,0,0.3)",
+      boxShadow: "0 10px 0px rgba(0,0,0,0.3)",
       opacity: 0.9,
       rotateX: 10,
       rotateY: -10,
       rotateZ: 5,
+      translateY: isInDeck || isExpanded ? "0px" : !isHome ? "130px" : "60px",
     },
     expanded: {
       scale: 0.7,
       zIndex: 50,
+      translateY: isInDeck || isExpanded ? "0px" : !isHome ? "130px" : "60px",
     },
   };
 
@@ -163,16 +167,28 @@ const PlayingCard = ({
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       whileHover={
         !isExpanded
-          ? { scale: isActive ? 1.15 : 1.05 }
-          : { scale: isActive ? 0.7 : 0.7 }
+          ? {
+              scale: isActive ? 1.15 : 1.05,
+              translateY:
+                isInDeck || isExpanded ? "0px" : !isHome ? "130px" : "60px",
+            }
+          : {
+              scale: isActive ? 0.7 : 0.7,
+              translateY:
+                isInDeck || isExpanded ? "0px" : !isHome ? "130px" : "60px",
+            }
       }
-      whileTap={{ scale: 0.95 }}
+      whileTap={{
+        scale: 0.95,
+        translateY: isInDeck ? "0px" : !isHome ? "130px" : "60px",
+      }}
       draggable="false"
     >
       <MediaContent
-        src={card.mediaSrc}
+        src={isOpponentSection ? "https://random.jpg" : card.mediaSrc}
         isExpanded={isExpanded}
         isActive={isActive}
+        isOpponentSection={isOpponentSection}
       />
       {isExpanded && (
         <div className="absolute top-full left-0 right-0 text-white text-center mt-4">

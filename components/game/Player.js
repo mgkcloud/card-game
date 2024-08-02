@@ -142,7 +142,6 @@ const Player = ({ children }) => {
   return (
     <main className="max-h-[100vh]">
       {children({
-        // title,
         user,
         visibleCards,
         deckCards,

@@ -22,6 +22,7 @@ export default function Table({ params }) {
       }) => (
         <>
           <DealerSection
+            isHome={false}
             user={user}
             title={params.title}
             className="max-h-[100%]"
