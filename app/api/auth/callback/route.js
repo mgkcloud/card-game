@@ -16,10 +16,13 @@ export async function GET(req) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) throw error;
       // Optionally, you can set a cookie here to indicate successful auth
-      cookies().set('auth_status', 'authenticated', { httpOnly: true, secure: true });
+      cookies().set("auth_status", "authenticated", {
+        httpOnly: true,
+        secure: true,
+      });
     } catch (error) {
       console.error("Error exchanging code for session:", error);
-      return NextResponse.redirect(new URL('/signin', getOrigin(req)));
+      return NextResponse.redirect(new URL("/signin", getOrigin(req)));
     }
   }
 
@@ -29,10 +32,10 @@ export async function GET(req) {
 
 function getOrigin(req) {
   // Get the host from the headers
-  const host = req.headers.get('host') || 'localhost:3000';
-  
+  const host = req.headers.get("host") || "localhost:3000";
+
   // Determine the protocol
-  const protocol = host.includes('localhost') ? 'http:' : 'http:';
-  
+  const protocol = host.includes("localhost") ? "http:" : "http:";
+
   return `${protocol}//${host}`;
 }

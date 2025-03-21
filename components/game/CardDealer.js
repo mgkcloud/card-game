@@ -1,18 +1,45 @@
-import React, { useState, useEffect, useCallback } from 'react';
-// import { toast } from 'react-hot-toast';
-// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-// import { fetchCards } from '@/app/utils/fetchCards';
-import TopMenu from './TopMenu';
-import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
-
-const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag }) => {
-  // const supabase = createClientComponentClient();
-
-
-  // Example usage of the helper functions
+import React, { useCallback } from "react";
+import TopMenu from "./TopMenu";
+import {
+  addNewCardsForUser,
+  clearCardsForUser,
+  clearHandForUser,
+} from "@/app/utils/playerTools";
+import ButtonSignin from "@/components/ButtonSignin";
+import ButtonAccount from "@/components/ButtonAccount";
+const CardDealer = ({
+  user,
+  setVisibleCards,
+  setDeckCards,
+  tumblrUsername,
+  setTumblrUsername,
+  caseSelector,
+  setCaseSelector,
+  tag,
+  setTag,
+}) => {
   const onAddNewCards = useCallback(() => {
-    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
+    addNewCardsForUser(
+      user,
+      tumblrUsername,
+      caseSelector,
+      tag,
+      setVisibleCards,
+      setDeckCards,
+    );
   }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
+
+  const onAddNewCardsToDeck = useCallback(() => {
+    addNewCardsForUser(
+      user,
+      tumblrUsername,
+      caseSelector,
+      tag,
+      setVisibleCards,
+      setDeckCards,
+      "deck",
+    );
+  }, [setDeckCards]);
 
   const onClearCards = useCallback(() => {
     clearCardsForUser(user, setVisibleCards, setDeckCards);
@@ -22,21 +49,26 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTu
     clearHandForUser(user, setVisibleCards);
   }, [user, setVisibleCards]);
 
-
   return (
-    <TopMenu
-      onAddNewCards={onAddNewCards}
-      onClearCards={onClearCards}
-      tumblrUsername={tumblrUsername}
-      setTumblrUsername={setTumblrUsername}
-      tag={tag}
-      setTag={setTag}
-      caseSelector={caseSelector}
-      setCaseSelector={setCaseSelector}
-      setVisibleCards={setVisibleCards}
-      setDeckCards={setDeckCards}
-      onClearHand={onClearHand}
-    />
+    <>
+      <div className="bg-neutral text-neutral-content">
+        {user ? <ButtonAccount /> : <ButtonSignin />}
+      </div>
+      <TopMenu
+        onAddNewCards={onAddNewCards}
+        onAddNewCardsToDeck={onAddNewCardsToDeck}
+        onClearCards={onClearCards}
+        tumblrUsername={tumblrUsername}
+        setTumblrUsername={setTumblrUsername}
+        tag={tag}
+        setTag={setTag}
+        caseSelector={caseSelector}
+        setCaseSelector={setCaseSelector}
+        setVisibleCards={setVisibleCards}
+        setDeckCards={setDeckCards}
+        onClearHand={onClearHand}
+      />
+    </>
   );
 };
 

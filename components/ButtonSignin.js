@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import config from "@/config";
-import Modal from "@/components/Modal"; // Import the Modal component
-import ButtonLead from "@/components/ButtonLead";
 
 const ButtonSignin = ({ text = "Get started", extraStyle }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,15 +51,10 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
     <>
       <button
         className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
-        onClick={openModal}
+        onClick={() => (window.location.href = "/signin")}
       >
         {text}
-    </button>
-
-      {/* Modal component */}
-      <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
-        <ButtonLead />
-      </Modal>
+      </button>
     </>
   );
 };
