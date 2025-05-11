@@ -39,7 +39,8 @@ describe("BoosterPack", function () {
         // Create a new subscription for each test run
         const createSubTx = await vrfCoordinatorMock.createSubscription();
         await createSubTx.wait(); // Ensure transaction is mined
-        subscriptionId = await vrfCoordinatorMock.s_nextSubId(); // Get the latest subId after creation
+        const nextSubId = await vrfCoordinatorMock.s_nextSubId; // Access as a property
+        subscriptionId = nextSubId - BigInt(1); // The created subId is the one before s_nextSubId increments
 
 
         // Deploy BoosterPack (configured for ETH payment by default in this setup)
