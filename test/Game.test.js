@@ -77,7 +77,7 @@ describe("Game", function () {
 
     describe("VRF Fulfillment for Game Seed", function () {
         let gameId, requestId;
-        const players = [player1.address, player2.address];
+        // const players = [player1.address, player2.address]; // This line caused issues, players are defined in outer scope and used in currentPlayers
 
         beforeEach(async function() {
             console.log("VRF Fulfillment beforeEach: player1 defined?", !!player1, player1 ? player1.address : "player1 undefined");
