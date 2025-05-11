@@ -6,7 +6,7 @@ describe("BoosterPack", function () {
     let FeistyToken, feistyToken; // Added for ERC20 payment tests
     let owner, addr1, addr2;
     const initialBaseURI = "ipfs://testcid/";
-    const subscriptionId = 1;
+    let subscriptionId; // Made dynamic
     const keyHash = "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15"; // Example key hash
     const boosterPackPriceETH = ethers.parseEther("0.1");
     const boosterPackPriceFST = ethers.parseUnits("100", 18); // Example price in FST tokens
@@ -35,6 +35,9 @@ describe("BoosterPack", function () {
         vrfCoordinatorMock = await VRFCoordinatorV2Mock.deploy();
         await vrfCoordinatorMock.waitForDeployment();
         const vrfCoordinatorAddress = await vrfCoordinatorMock.getAddress();
+
+        // Create a new subscription for each test run
+        subscriptionId = await vrfCoordinatorMock.createSubscription(); // Directly get the subId from the return value
 
         // Deploy BoosterPack (configured for ETH payment by default in this setup)
         BoosterPack = await ethers.getContractFactory("BoosterPack");
