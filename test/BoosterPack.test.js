@@ -37,7 +37,10 @@ describe("BoosterPack", function () {
         const vrfCoordinatorAddress = await vrfCoordinatorMock.getAddress();
 
         // Create a new subscription for each test run
-        subscriptionId = await vrfCoordinatorMock.createSubscription(); // Directly get the subId from the return value
+        const createSubTx = await vrfCoordinatorMock.createSubscription();
+        await createSubTx.wait(); // Ensure transaction is mined
+        subscriptionId = await vrfCoordinatorMock.s_nextSubId(); // Get the latest subId after creation
+
 
         // Deploy BoosterPack (configured for ETH payment by default in this setup)
         BoosterPack = await ethers.getContractFactory("BoosterPack");
