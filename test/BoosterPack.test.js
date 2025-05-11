@@ -38,10 +38,12 @@ describe("BoosterPack", function () {
 
         // Create a new subscription for each test run
         const createSubTx = await vrfCoordinatorMock.createSubscription();
-        await createSubTx.wait(); // Ensure transaction is mined
-        const nextSubId = await vrfCoordinatorMock.s_nextSubId; // Access as a property
-        subscriptionId = nextSubId - BigInt(1); // The created subId is the one before s_nextSubId increments
-
+        const createSubReceipt = await createSubTx.wait();
+        const subCreatedEvent = createSubReceipt.logs.find(log => log.eventName === "SubscriptionCreated");
+        if (!subCreatedEvent) {
+            throw new Error("SubscriptionCreated event not found in transaction receipt for BoosterPack.test.js beforeEach");
+        }
+        subscriptionId = subCreatedEvent.args.subId;
 
         // Deploy BoosterPack (configured for ETH payment by default in this setup)
         BoosterPack = await ethers.getContractFactory("BoosterPack");
