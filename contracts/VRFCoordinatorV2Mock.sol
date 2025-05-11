@@ -61,7 +61,12 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     function getSubscription(uint64 _subId) external view override returns (uint96 balance, uint64 reqCount, address owner, address[] memory consumers) {
         Subscription storage sub = s_subscriptions[_subId];
         require(sub.owner != address(0), "Subscription not found");
-        return (sub.balance, sub.pendingRequestCount, sub.owner, sub.consumers);
+        // Create a memory array for consumers to match the interface
+        address[] memory memoryConsumers = new address[](sub.consumers.length);
+        for(uint i = 0; i < sub.consumers.length; i++){
+            memoryConsumers[i] = sub.consumers[i];
+        }
+        return (sub.balance, uint64(sub.pendingRequestCount), sub.owner, memoryConsumers);
     }
 
     // fundSubscription is not part of VRFCoordinatorV2Interface, but often used in mocks. Keeping it for now if tests rely on it.
@@ -196,8 +201,8 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     // Helper for tests to create and fund a subscription in one go, and add a consumer.
     // Not part of the interface.
     function createSubscriptionAndFund(uint96 _amount) external returns (uint64 subId) {
-        subId = createSubscription();
-        fundSubscription(subId, _amount);
+        subId = this.createSubscription();
+        this.fundSubscription(subId, _amount);
         return subId;
     }
 

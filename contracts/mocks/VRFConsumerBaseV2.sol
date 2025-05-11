@@ -8,6 +8,6 @@ contract VRFConsumerBaseV2 {
      * @param requestId The Id initially returned by requestRandomWords
      * @param randomWords the VRF output
      */
-    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {}
+    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) public virtual {}
 }
 
