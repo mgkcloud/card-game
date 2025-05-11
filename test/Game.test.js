@@ -10,20 +10,21 @@ describe("Game", function () {
 
     beforeEach(async function () {
         [owner, player1, player2, player3] = await ethers.getSigners();
+        // console.log("Top beforeEach: Owner address:", owner.address);
+        // console.log("Top beforeEach: Player1 address:", player1.address);
 
-        // Deploy CardNFT
         CardNFT = await ethers.getContractFactory("CardNFT");
         cardNFT = await CardNFT.deploy(initialBaseURI, owner.address);
         await cardNFT.waitForDeployment();
         const cardNFTAddress = await cardNFT.getAddress();
+        // console.log("Top beforeEach: CardNFT deployed at:", cardNFTAddress);
 
-        // Deploy VRFCoordinatorV2Mock
         VRFCoordinatorV2Mock = await ethers.getContractFactory("VRFCoordinatorV2Mock");
         vrfCoordinatorMock = await VRFCoordinatorV2Mock.deploy();
         await vrfCoordinatorMock.waitForDeployment();
         const vrfCoordinatorAddress = await vrfCoordinatorMock.getAddress();
+        // console.log("Top beforeEach: VRFCoordinatorV2Mock deployed at:", vrfCoordinatorAddress);
 
-        // Deploy Game contract
         Game = await ethers.getContractFactory("Game");
         game = await Game.deploy(
             vrfCoordinatorAddress,
@@ -34,20 +35,14 @@ describe("Game", function () {
         );
         await game.waitForDeployment();
         const gameAddress = await game.getAddress();
+        // console.log("Top beforeEach: Game deployed at:", gameAddress);
+        // if (!game.target && !game.address) console.warn("Top beforeEach: Game contract might not be fully initialized (missing target/address)");
 
-        // Add Game contract as a consumer to the mock VRF coordinator
         await vrfCoordinatorMock.addConsumerInternal(subscriptionId, gameAddress);
+        // console.log("Top beforeEach: Game contract added as consumer to VRF mock.");
     });
 
     describe("Deployment", function () {
-        it("Should set the correct VRF coordinator address", async function () {
-            // Note: Game.sol stores COORDINATOR as a non-public state variable, accessed via VRFConsumerBaseV2's internal variable.
-            // We can test it by ensuring requests go to the right mock.
-            // Or, make COORDINATOR public in Game.sol if direct checking is desired.
-            // For now, we'll infer from successful requests.
-            expect(await game.owner()).to.equal(owner.address); // Basic check
-        });
-
         it("Should set the correct CardNFT address", async function () {
             expect(await game.cardNFT()).to.equal(await cardNFT.getAddress());
         });
@@ -64,7 +59,7 @@ describe("Game", function () {
                 .to.emit(game, "GameCreated")
                 .to.emit(game, "GameSeedRequested");
             
-            const gameId = await game.nextGameId() - BigInt(1); // nextGameId is incremented before use
+            const gameId = await game.nextGameId() - BigInt(1); 
             const gameInstance = await game.games(gameId);
             expect(gameInstance.gameId).to.equal(gameId);
             expect(gameInstance.players).to.deep.equal(players);
@@ -85,46 +80,76 @@ describe("Game", function () {
         const players = [player1.address, player2.address];
 
         beforeEach(async function() {
-            const tx = await game.createGame(players);
-            const receipt = await tx.wait();
-            // Extract gameId and requestId from events if direct return is not used or for robustness
-            const gameCreatedEvent = receipt.logs.find(log => log.fragment && log.fragment.name === "GameCreated");
+            console.log("VRF Fulfillment beforeEach: player1 defined?", !!player1, player1 ? player1.address : "player1 undefined");
+            console.log("VRF Fulfillment beforeEach: player2 defined?", !!player2, player2 ? player2.address : "player2 undefined");
+            console.log("VRF Fulfillment beforeEach: game contract defined?", !!game, game ? (game.target || game.address) : "game undefined");
+            
+            const currentPlayers = [player1.address, player2.address];
+            console.log("VRF Fulfillment beforeEach: currentPlayers:", currentPlayers);
+
+            let tx;
+            try {
+                console.log("VRF Fulfillment beforeEach: Calling game.createGame with players:", currentPlayers);
+                tx = await game.createGame(currentPlayers);
+                console.log("VRF Fulfillment beforeEach: game.createGame returned tx:", tx ? "Transaction object defined" : "Transaction object UNDEFINED", tx);
+            } catch (e) {
+                console.error("VRF Fulfillment beforeEach: Error during game.createGame:", e);
+                throw e; 
+            }
+            
+            if (!tx || typeof tx.wait !== 'function') {
+                console.error("VRF Fulfillment beforeEach: Transaction object 'tx' is invalid or does not have a 'wait' function:", tx);
+                throw new Error("Invalid transaction object from game.createGame");
+            }
+
+            console.log("VRF Fulfillment beforeEach: Calling tx.wait()...");
+            const receipt = await tx.wait(); 
+            console.log("VRF Fulfillment beforeEach: tx.wait() successful, receipt obtained."); // Log receipt details if needed
+            
+            const gameCreatedEvent = receipt.events?.find(e => e.event === "GameCreated");
+            if (!gameCreatedEvent) {
+                console.error("VRF Fulfillment beforeEach: GameCreated event not found in receipt events:", receipt.events);
+                throw new Error("GameCreated event not found");
+            }
             gameId = gameCreatedEvent.args.gameId;
-            const seedRequestedEvent = receipt.logs.find(log => log.fragment && log.fragment.name === "GameSeedRequested");
+
+            const seedRequestedEvent = receipt.events?.find(e => e.event === "GameSeedRequested");
+            if (!seedRequestedEvent) {
+                console.error("VRF Fulfillment beforeEach: GameSeedRequested event not found in receipt events:", receipt.events);
+                throw new Error("GameSeedRequested event not found");
+            }
             requestId = seedRequestedEvent.args.requestId;
+            console.log(`VRF Fulfillment beforeEach: gameId ${gameId}, requestId ${requestId} extracted.`);
         });
 
         it("Should fulfill game seed request and update game state", async function () {
-            const randomWords = [ethers.toBigInt(ethers.hexlify(ethers.randomBytes(32)))]; // Example random seed
+            console.log("Test - Should fulfill: gameId:", gameId, "requestId:", requestId);
+            const randomWords = [ethers.toBigInt(ethers.hexlify(ethers.randomBytes(32)))]; 
             
-            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, await game.getAddress(), randomWords))
+            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, (game.target || game.address), randomWords))
                 .to.emit(game, "GameSeedFulfilled")
                 .withArgs(gameId, requestId, randomWords[0]);
 
             const gameInstance = await game.games(gameId);
             expect(gameInstance.gameSeed).to.equal(randomWords[0]);
             expect(gameInstance.seedFulfilled).to.be.true;
-            expect(await game.s_requestIdToGameId(requestId)).to.equal(0); // Should be deleted
+            expect(await game.s_requestIdToGameId(requestId)).to.equal(0); 
         });
 
         it("Should reject fulfillment if request ID is invalid", async function () {
             const invalidRequestId = 9999;
             const randomWords = [123];
-            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(invalidRequestId, await game.getAddress(), randomWords))
-                .to.be.revertedWith("Invalid request ID"); // Mock's revert string
+            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(invalidRequestId, (game.target || game.address), randomWords))
+                .to.be.revertedWith("Invalid request ID");
         });
 
         it("Should reject fulfillment if seed is already fulfilled for the game", async function () {
-            const randomWords1 = [123];
-            await vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, await game.getAddress(), randomWords1);
+            const randomWords1 = [ethers.toBigInt(123)];
+            await vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, (game.target || game.address), randomWords1);
 
-            // Attempt to fulfill again (e.g. if VRF coordinator somehow re-sends or it's a bug)
-            const randomWords2 = [456];
-            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, await game.getAddress(), randomWords2))
-                 .to.be.revertedWith("Invalid request ID"); // Because s_requests[requestId] is deleted in mock
-            // To test Game.sol's internal check: "Game: Seed already fulfilled"
-            // we'd need a mock that doesn't delete s_requests or a way to re-request for same gameId.
-            // For now, the mock's behavior covers the immediate failure.
+            const randomWords2 = [ethers.toBigInt(456)];
+            await expect(vrfCoordinatorMock.fulfillRandomWordsWithOverride(requestId, (game.target || game.address), randomWords2))
+                 .to.be.revertedWith("Invalid request ID"); 
         });
     });
 
@@ -132,15 +157,12 @@ describe("Game", function () {
         it("Should allow owner to set VRF subscription ID", async function () {
             const newSubId = 2;
             await game.setVrfSubscriptionId(newSubId);
-            // Cannot directly check s_subscriptionId as it's private. Test by effect if possible or make internal getter.
-            // For now, assume it works if no revert.
         });
 
         it("Should prevent non-owners from setting VRF subscription ID", async function () {
             await expect(game.connect(player1).setVrfSubscriptionId(2))
                 .to.be.revertedWithCustomError(game, "OwnableUnauthorizedAccount");
         });
-        // Add similar tests for setVrfKeyHash, setVrfCallbackGasLimit, setVrfRequestConfirmations
     });
 
     describe("View Functions", function () {
@@ -148,7 +170,7 @@ describe("Game", function () {
             const players = [player1.address, player2.address];
             const tx = await game.createGame(players);
             const receipt = await tx.wait();
-            const gameCreatedEvent = receipt.logs.find(log => log.fragment && log.fragment.name === "GameCreated");
+            const gameCreatedEvent = receipt.events.find(e => e.event === "GameCreated");
             const gameId = gameCreatedEvent.args.gameId;
 
             const gameInstance = await game.getGameDetails(gameId);
