@@ -82,7 +82,7 @@ describe("BoosterPack", function () {
 
     describe("Deployment & Configuration", function () {
         it("Should set the correct VRF coordinator address", async function () {
-            expect(await boosterPack.COORDINATOR()).to.equal(await vrfCoordinatorMock.getAddress());
+            expect(await boosterPack.COORDINATOR).to.equal(await vrfCoordinatorMock.getAddress());
         });
 
         it("Should set the correct CardNFT address", async function () {

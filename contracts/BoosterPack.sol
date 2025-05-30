@@ -12,9 +12,9 @@ import "./CardNFT.sol"; // Assuming CardNFT.sol is in the same directory
  * @dev Manages the purchase and random distribution of CardNFTs using Chainlink VRF.
  */
 contract BoosterPack is VRFConsumerBaseV2, Ownable {
-    VRFCoordinatorV2Interface COORDINATOR;
-    CardNFT cardNFT; // Interface or contract instance
-    IERC20 paymentToken; // ERC20 token for payment (optional, could use ETH)
+    VRFCoordinatorV2Interface public COORDINATOR;
+    CardNFT public cardNFT; // Interface or contract instance
+    IERC20 public paymentToken; // ERC20 token for payment (optional, could use ETH)
 
     // Chainlink VRF Variables
     uint64 s_subscriptionId;
