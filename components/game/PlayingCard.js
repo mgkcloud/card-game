@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -118,6 +118,22 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
 
 const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumbnailView }) => {
 
+  const cardRef = useRef(null);
+  const shineRef = useRef(null);
+
+  useEffect(() => {
+    if (!cardRef.current || !shineRef.current) return;
+    const img = cardRef.current.querySelector('img');
+    if (!img) return;
+    let stop;
+    import('../../rare-card-shine/dist/index.js').then(mod => {
+      if (mod.startRareShine) {
+        mod.startRareShine(img, shineRef.current).then(s => { stop = s; });
+      }
+    });
+    return () => { if (stop) stop(); };
+  }, []);
+
 
   // const baseClassName = `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`;
 
@@ -149,6 +165,7 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumb
 
   return (
     <motion.div
+      ref={cardRef}
       className={baseClassName}
       initial="normal"
       animate={isDragging ? "dragging" : isExpanded ? "expanded" : "normal"}
@@ -159,6 +176,7 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumb
       draggable="false"
     >
       <MediaContent src={card.mediaSrc} isExpanded={isExpanded} isActive={isActive} />
+      <canvas ref={shineRef} className="rare-shine absolute inset-0 pointer-events-none" />
       {isExpanded && (
         <div className="absolute top-full left-0 right-0 text-white text-center mt-4">
           <h3 className="text-lg font-bold">{card.title}</h3>
