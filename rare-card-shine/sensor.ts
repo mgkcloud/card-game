@@ -1,3 +1,6 @@
+// sensor.ts
+// Sensor input module: DeviceOrientationEvent on mobile, mouse on desktop
+
 const lightDir = new Float32Array([0, 0, 1]);
 let targetElement: HTMLElement | null = null;
 let useOrientation = false;
@@ -34,6 +37,10 @@ function handleMouse(ev: MouseEvent): void {
   update([x, -y, 1]);
 }
 
+/**
+ * Attach sensors to an element to update lightDir.
+ * @param element - canvas element covering the card
+ */
 export function setupSensors(element: HTMLElement): void {
   targetElement = element;
   if ('DeviceOrientationEvent' in window) {
@@ -59,6 +66,9 @@ export function setupSensors(element: HTMLElement): void {
   }
 }
 
+/**
+ * Get current light direction for specular calculation.
+ */
 export function getLightDir(): Float32Array {
   return lightDir;
 }

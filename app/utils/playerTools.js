@@ -1,13 +1,11 @@
-
-
 import { toast } from 'react-hot-toast';
 import { fetchCards } from '@/app/utils/fetchCards';
 
 
 // Helper function to add new cards for a user
-export const addNewCardsForUser = async (user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards) => {
+export const addNewCardsForUser = async (user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards, prompt) => {
     try {
-        const media = await fetchCards(caseSelector, tumblrUsername, tag);
+        const media = await fetchCards(caseSelector, tumblrUsername, tag, prompt);
         const allCards = media.map((item, index) => ({
             id: `card-${Date.now()}-${index}`,
             title: `Media ${index + 1}`,
@@ -19,7 +17,13 @@ export const addNewCardsForUser = async (user, tumblrUsername, caseSelector, tag
         }));
         const hand = allCards.slice(0, 9);
         const deck = allCards.slice(9);
-        setVisibleCards(prev => [...prev, ...hand]);
+        setVisibleCards(prev => {
+            // Handle case where prev might be a number (from DeckPreview) or array
+            if (typeof prev === 'number') {
+                return hand;
+            }
+            return [...prev, ...hand];
+        });
         setDeckCards(prev => [...prev, ...deck]);
         if (user) {
             // Save to database if user is logged in

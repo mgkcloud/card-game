@@ -1,17 +1,20 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragOverlay, useSensor, TouchSensor } from '@dnd-kit/core';
 import CardHand from './CardHand';
 import DeckPreview from './DeckPreview';
 import CardDealer from './CardDealer';
 import CardRevealSection from './CardRevealSection';
+import DraggableCard from './DraggableCard';
 
 const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHand, user, session, onDragStart, visibleCards, setVisibleCards, setDeckCards, sendMessage, messages }) => {
   const [isDeckOpen, setIsDeckOpen] = useState(false);
-  const [revealedCards, setRevealedCards] = useState(Array(6).fill(null));
+  const [revealedCards, setRevealedCards] = useState([]);
   const [tumblrUsername, setTumblrUsername] = useState('sabertoothwalrus.tumblr.com');
   const [tag, setTag] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [caseSelector, setCaseSelector] = useState('tumblr');
+  const [activeCard, setActiveCard] = useState(null);
   const targetElementRef = useRef(null);
 
   const handleMoveCardToHand = useCallback((card) => {
@@ -22,35 +25,50 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
   const handleCardReveal = useCallback((card) => {
     console.log('Revealing card:', card);
     setRevealedCards((prev) => {
-      const emptyIndex = prev.findIndex((c) => c === null);
-      if (emptyIndex !== -1) {
-        const newRevealedCards = [...prev];
-        newRevealedCards[emptyIndex] = card;
-        console.log('Updated revealedCards:', newRevealedCards);
-        return newRevealedCards;
-      }
-      return prev;
+      const newRevealedCards = [...prev, card];
+      console.log('Updated revealedCards:', newRevealedCards);
+      return newRevealedCards;
     });
     setVisibleCards((prev) => prev.filter((c) => c.id !== card.id));
   }, [setVisibleCards]);
 
   const handleDragEnd = useCallback((event) => {
+    setActiveCard(null);
     console.log('Drag end event:', event);
     const { active, over } = event;
 
+    // Check if the dragged card is from the deck
+    const draggedFromDeck = deckCards.find(card => card.id === active.id);
+    const draggedFromHand = handCards.find(card => card.id === active.id);
+
     if (over && over.id === 'card-reveal-section') {
-      const draggedCard = handCards.find(card => card.id === active.id);
-      if (draggedCard) {
-        console.log('Dragged card to reveal section:', draggedCard);
-        handleCardReveal(draggedCard);
+      if (draggedFromHand) {
+        console.log('Dragged card to reveal section:', draggedFromHand);
+        handleCardReveal(draggedFromHand);
+      } else if (draggedFromDeck) {
+        console.log('Dragged deck card to reveal section:', draggedFromDeck);
+        handleCardReveal(draggedFromDeck);
+        setDeckCards((prevDeckCards) => prevDeckCards.filter((c) => c.id !== draggedFromDeck.id));
       }
     } else if (over && over.id === 'deck-preview') {
-      const draggedCard = handCards.find(card => card.id === active.id);
-      if (draggedCard) {
-        onMoveCardToDeck(draggedCard);
+      if (draggedFromHand) {
+        onMoveCardToDeck(draggedFromHand);
+      }
+    } else {
+      // Handle cards dragged from deck without specific drop target (move to hand)
+      if (draggedFromDeck) {
+        console.log('Moving deck card to hand:', draggedFromDeck);
+        handleMoveCardToHand(draggedFromDeck);
       }
     }
-  }, [handCards, handleCardReveal, onMoveCardToDeck]);
+  }, [handCards, deckCards, handleCardReveal, onMoveCardToDeck, handleMoveCardToHand]);
+
+  const handleDragStart = useCallback((event) => {
+    const draggedCard = deckCards.find(card => card.id === event.active.id) || 
+                       handCards.find(card => card.id === event.active.id);
+    setActiveCard(draggedCard);
+    if (onDragStart) onDragStart(event);
+  }, [deckCards, handCards, onDragStart]);
 
   useEffect(() => {
     if (targetElementRef.current) {
@@ -91,8 +109,19 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
   ), [deckCards, handleMoveCardToHand, isDeckOpen, tumblrUsername, tag, caseSelector, visibleCards, user, setVisibleCards, setDeckCards]);
 
   return (
-    <DndContext onDragStart={onDragStart} onDragEnd={handleDragEnd}>
-      <section ref={targetElementRef} className="bg-neutral text-neutral-content">
+    <DndContext 
+      onDragStart={handleDragStart} 
+      onDragEnd={handleDragEnd}
+      sensors={[
+        useSensor(TouchSensor, {
+          activationConstraint: {
+            delay: 250,
+            tolerance: 5
+          }
+        })
+      ]}
+    >
+      <section ref={targetElementRef} className="bg-neutral text-neutral-content" style={{ overflow: 'visible' }}>
         <CardDealer
           user={user}
           setVisibleCards={setVisibleCards}
@@ -104,6 +133,8 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
           setTag={setTag}
           caseSelector={caseSelector}
           setCaseSelector={setCaseSelector}
+          prompt={prompt}
+          setPrompt={setPrompt}
         />
         <CardRevealSection revealedCards={revealedCards} onCardReveal={handleCardReveal} />
         <div className="w-full h-[145vh] sm:h-[180vh] md:h-[220vh] relative" >
@@ -112,6 +143,29 @@ const DealerSection = ({ handCards, deckCards, onMoveCardToDeck, onMoveCardToHan
 
         </div>
         {memoizedDeckPreview}
+        <DragOverlay style={{ zIndex: 50000 }}>
+          {activeCard ? (
+            <DraggableCard
+              card={activeCard}
+              isDummy={false}
+              isActive={false}
+              position={{ x: 0, y: 0, rotate: 0, scale: 1, zIndex: 1 }}
+              onDragStart={() => {}}
+              onDragEnd={() => {}}
+              onMoveCardToDeck={() => {}}
+              containerRef={false}
+              renderDragOverlay={null}
+              isDeckOpen={true}
+              dragConstraints={false}
+              onClick={() => {}}
+              isExpanded={false}
+              setIsExpanded={() => {}}
+              isThumbnailView={false}
+              isInDeck={true}
+              isInRevealSection={false}
+            />
+          ) : null}
+        </DragOverlay>
       </section>
     </DndContext>
   );

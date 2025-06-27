@@ -113,15 +113,14 @@ const MediaContent = ({ src, isExpanded, isActive }) => {
   return null;
 };
 
-
-
-
-const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumbnailView }) => {
+const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumbnailView, isInRevealSection }) => {
 
   const cardRef = useRef(null);
   const shineRef = useRef(null);
 
   useEffect(() => {
+    const isLegendary = card.items?.[0] === 'legendary';
+    if (!isLegendary) return;
     if (!cardRef.current || !shineRef.current) return;
     const img = cardRef.current.querySelector('img');
     if (!img) return;
@@ -134,13 +133,10 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumb
     return () => { if (stop) stop(); };
   }, []);
 
+  // When dragging from deck, show as playing card; otherwise respect thumbnail view
+  const shouldShowAsPlayingCard = !isThumbnailView || isDragging;
+  const baseClassName = shouldShowAsPlayingCard ? `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}` : `w-full aspect-square rounded-lg ${card.color} ${card.textColor}`;
 
-  // const baseClassName = `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}`;
-
-
-  const baseClassName = !isThumbnailView || isDragging ? `w-40 h-60 sm:w-48 sm:h-72 rounded-lg ${card.color} ${card.textColor}` : `w-full aspect-square rounded-lg ${card.color} ${card.textColor}`;
-
- 
   const variants = {
     normal: {
       scale: isActive ? 1.1 : 1,
@@ -150,12 +146,12 @@ const PlayingCard = ({ card, isActive, isDragging, isInDeck, isExpanded, isThumb
       opacity: isActive ? 1 : 0.7,
     },
     dragging: {
-      scale: 0.7,
+      scale: isInDeck ? 1 : 0.7,
       boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
       opacity: 0.9,
-      rotateX: 10,
-      rotateY: -10,
-      rotateZ: 5,
+      rotateX: isInDeck ? 0 : 10,
+      rotateY: isInDeck ? 0 : -10,
+      rotateZ: isInDeck ? 0 : 5,
     },
     expanded: {
       scale: 0.7,

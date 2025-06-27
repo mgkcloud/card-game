@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector, onDrawCard }) => {
+const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, setTumblrUsername, tag, setTag, caseSelector, setCaseSelector, onDrawCard, prompt, setPrompt }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
       className="fixed top-0 left-0 w-full bg-gray-800"
-      style={{ zIndex: isOpen ? 20000 : 200 }}
+      style={{ zIndex: isOpen ? 20000 : 3000 }}
       animate={{ height: isOpen ? '50vh' : '20px' }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
@@ -31,6 +31,16 @@ const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, set
               className="input input-bordered mr-2 mb-2"
               style={{ fontSize: '22px' }}
             />
+            {caseSelector === 'gnn' && (
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Prompt (GNN)"
+                className="input input-bordered mr-2 mb-2"
+                style={{ fontSize: '22px' }}
+              />
+            )}
             <select
               value={caseSelector}
               onChange={(e) => setCaseSelector(e.target.value)}
@@ -39,6 +49,8 @@ const TopMenu = ({ onAddNewCards, onClearCards, onClearHand, tumblrUsername, set
             >
               <option value="tumblr">Default (Tumblr)</option>
               <option value="piwigo">Piwigo</option>
+              <option value="gnn">GNN</option>
+              <option value="bucket">R2 Bucket</option>
               {/* Add more cases as needed */}
             </select>
             <button onClick={onAddNewCards} className="btn btn-primary mb-2">

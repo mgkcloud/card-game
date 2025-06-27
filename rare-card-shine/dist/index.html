@@ -6,19 +6,20 @@
   <style>
     body { display: flex; flex-direction: column; align-items: center; background: #222; color: #fff; font-family: sans-serif; }
     .card-container { position: relative; width: 300px; height: 450px; margin: 2rem 0; }
-    .card { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .card { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; border-radius: 8px; }
     .rare-shine { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
     #intensity { width: 300px; }
   </style>
+  <script type="module" crossorigin src="/index.js"></script>
 </head>
 <body>
   <h1>Rare Card Shine Demo</h1>
   <div class="card-container">
-    <img class="card" src="./card.png" alt="Card" />
+    <img class="card" src="/assets/card-9480338a.png" alt="Card" />
     <canvas class="rare-shine"></canvas>
   </div>
   <label for="intensity">Specular Intensity</label>
   <input id="intensity" type="range" min="1" max="4" step="0.1" value="1" />
-  <script type="module" src="./index.ts"></script>
+  
 </body>
 </html>

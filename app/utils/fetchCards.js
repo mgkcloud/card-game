@@ -1,7 +1,13 @@
 // utils/fetchCards.js
-export async function fetchCards(provider, identifier, tag) {
+export async function fetchCards(provider, identifier = '', tag = '', prompt = '') {
     console.log(`Fetching cards for ${provider}: ${identifier}`);
-    const response = await fetch(`/api/cards?provider=${provider}&identifier=${encodeURIComponent(identifier)}&tag=${encodeURIComponent(tag)}`);
+    const params = new URLSearchParams();
+    params.append('provider', provider);
+    if (identifier) params.append('identifier', identifier);
+    if (tag) params.append('tag', tag);
+    if (prompt) params.append('prompt', prompt);
+
+    const response = await fetch(`/api/cards?${params.toString()}`);
     if (!response.ok) {
       throw new Error(`Error fetching cards: ${response.status}`);
     }

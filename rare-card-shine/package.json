@@ -4,7 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.json"
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build && tsc -p tsconfig.json",
+    "postbuild": "cp shaders.wgsl dist/shaders.wgsl",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "rollup-plugin-string": "^3.0.0"
   }
 }

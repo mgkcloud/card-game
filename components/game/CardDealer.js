@@ -5,14 +5,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import TopMenu from './TopMenu';
 import { addNewCardsForUser, clearCardsForUser, clearHandForUser } from '@/app/utils/playerTools'
 
-const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag }) => {
+const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTumblrUsername, caseSelector, setCaseSelector, tag, setTag, prompt, setPrompt }) => {
   // const supabase = createClientComponentClient();
-
 
   // Example usage of the helper functions
   const onAddNewCards = useCallback(() => {
-    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards);
-  }, [user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards]);
+    addNewCardsForUser(user, tumblrUsername, caseSelector, tag, setVisibleCards, setDeckCards, prompt);
+  }, [user, tumblrUsername, caseSelector, tag, prompt, setVisibleCards, setDeckCards]);
 
   const onClearCards = useCallback(() => {
     clearCardsForUser(user, setVisibleCards, setDeckCards);
@@ -33,6 +32,8 @@ const CardDealer = ({ user, setVisibleCards, setDeckCards, tumblrUsername, setTu
       setTag={setTag}
       caseSelector={caseSelector}
       setCaseSelector={setCaseSelector}
+      prompt={prompt}
+      setPrompt={setPrompt}
       setVisibleCards={setVisibleCards}
       setDeckCards={setDeckCards}
       onClearHand={onClearHand}
